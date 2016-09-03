@@ -4,19 +4,24 @@
 		<param id="materialsCount" />
 		<param id="walletStatus" />
 		<param id="fridgeStatus" maxValue="100" />
-		<param id="koncentration" />
+		<param id="koncentration" maxValue="1"/>
 		<param id="freshness" maxValue="1"/>
 		
 		<param id="rent" startValue="100" />
 		<param id="constructionSkills" />
 		<param id="biznesCompetence" />
-		<param id="happiness" maxValue="100" />
+		<param id="happiness" />
+		<param id="deltaHappiness" />
 	</parameters>
 	
 	<time>
 		<change what="walletStatus" per="720" value="-1 * rent" />
 		<change what="fridgeStatus" per="24" value="-4" />
 	</time>
+	
+	<schedule default="house">
+		<situation from="8.00" to="16.30" id="work"/>
+		<situation from="12.00" to="12.30" id="brake"/>
 	
 	<events chance="0.1" />
 	
@@ -25,12 +30,13 @@
 		<situation id="house" deafault="true"  >
 			<change what="concentration" value="0.1" />
 			<change what="walletStatus" value="0.1 * rent" />
+			<change what="biznesCompetence"
 			
 			<event
 				id="planeParty" 
 				text="znajomi wpadli na Plane Party. Imprreza była przednia!" 
 				maxTime="2" 
-				depleteText="zbarakło materiałó na zabawę. Imprezowicze rozeszli się do domów"
+				depleteText="zbarakło materiałów na zabawę. Imprezowicze rozeszli się do domów"
 				interupText="Rozsiadłeś się w fotelu"
 				>
 				<change what="happiness" value="0.5"/>
@@ -44,6 +50,11 @@
 		<situation id="sleep"  >
 			<change what="concentration" value="0.2" />
 			<change what="freshness" value="0.1" />
+			
+			<event
+				id="sweetDreams"
+				text="Przyśnił ci się model doskonały"
+				>
 		</situation>
 		
 		<situation id="shopping"  >
@@ -62,9 +73,17 @@
 		</situation>
 		
 		<situation id="throwingPlanes" >
-			<change what="happiness" value="1+constructionSkills*0.1"/>
-			
-			<change
+			<change what="happiness" value="constructionSkills * 0.1 + 1"/>
+		</situation>
+		
+		<situation id="work" >
+			<change what="walletStatus" value="biznesCompetence * concentration * 0.5"/>
+			<change what="concentration" value="-0.2" >
+			</change>
+			<change what="freshness" value="-0.1" />
+		</situation/>
+		
+		<situation id="brake" selectable="false">
 		</situation>
 		
 	</situations>
