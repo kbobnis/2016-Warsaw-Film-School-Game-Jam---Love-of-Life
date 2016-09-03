@@ -38,13 +38,17 @@ public class ButtonSchedule : MonoBehaviour {
 	}
 
 	internal void PropositionWasSelected(Situation proposed) {
-		if (Ss == null) {
-			ProposedSituation = proposed;
-		}
+		ProposedSituation = proposed;
 		RefreshMe();
 	}
 
 	public void Clicked() {
+		if (IsPermament) {
+			return;
+		}
+		if (Ss != null) {
+			Ss = null;
+		}
 		if (ProposedSituation != null && Ss == null) {
 			Ss = ProposedSituation;
 		}
