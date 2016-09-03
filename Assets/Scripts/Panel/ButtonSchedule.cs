@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 using UnityEngine.UI;
 
 public class ButtonSchedule : MonoBehaviour {
 
+	private Situation Ss;
+	private Situation ProposedSituation;
+	private PanelSchedule PanelSchedule;
+	private bool IsPermament;
+	
 	// Use this for initialization
 	void Start () {
 	
@@ -15,8 +18,41 @@ public class ButtonSchedule : MonoBehaviour {
 	
 	}
 
-	internal void Init(ScheduledSituation s) {
-		GetComponentInChildren<Text>().text = s.Situation.Text;
-		GetComponent<Image>().color = s.Permament ? Color.red : Color.white;
+	private void RefreshMe() {
+		GetComponentInChildren<Text>().text = "";
+		GetComponent<Button>().enabled = Ss != null || ProposedSituation != null;
+		if (Ss != null) {
+			GetComponentInChildren<Text>().text = Ss.Text;
+		} else if (ProposedSituation != null) {
+			GetComponentInChildren<Text>().text = "Wstaw tutaj " + ProposedSituation.Text;
+		}
+	}
+
+	internal void Init(Situation s, bool isPermament, PanelSchedule panelSchedule) {
+		ProposedSituation = null;
+		Ss = s;
+		IsPermament = isPermament;
+		PanelSchedule = panelSchedule;
+		RefreshMe();
+		GetComponent<Image>().color = IsPermament ? Color.red : Color.white;
+	}
+
+	internal void PropositionWasSelected(Situation proposed) {
+		if (Ss == null) {
+			ProposedSituation = proposed;
+		}
+		RefreshMe();
+	}
+
+	public void Clicked() {
+		if (ProposedSituation != null && Ss == null) {
+			Ss = ProposedSituation;
+		}
+		PanelSchedule.UnselectProposed();
+	}
+
+	internal void UnselectProposed() {
+		ProposedSituation = null;
+		RefreshMe();
 	}
 }
