@@ -16,17 +16,34 @@ public class PanelSchedule : MonoBehaviour {
 
 	}
 
-	internal void Init(Schedule schedule, List<Situation> situations) {
-		//prepare 24 hours
-		Transform hours = transform.GetChild(1).GetChild(0).GetChild(1);
-		int i = 0;
-		foreach (Transform hour in hours) {
-			hour.GetComponentsInChildren<Text>()[0].text = "" + i.ToString("00");
-			//add situations
-			ButtonSchedule buttonSchedule = hour.GetComponentInChildren<ButtonSchedule>();
-			ScheduledSituation s = schedule.getSituationForHour(i);
-			buttonSchedule.Init(s!=null?s.Situation:null, s!=null?s.Permament:false, this);
-			i++;
+	internal void Init(Schedule schedule, List<Situation> situations, List<Parameter> parameters) {
+
+		//prepare parameters
+		Transform parametersTransform = transform.GetChild(0);
+		{
+			int i = 0;
+			foreach (Transform parameter in parametersTransform) {
+				parameter.gameObject.SetActive(false);
+				if (parameters.Count > i) {
+					parameter.gameObject.SetActive(true);
+					parameter.GetComponent<PanelParameter>().Init(parameters[i]);
+				}
+				i++;
+			}
+		}
+
+		{
+			//prepare 24 hours
+			Transform hours = transform.GetChild(1).GetChild(0).GetChild(1);
+			int i = 0;
+			foreach (Transform hour in hours) {
+				hour.GetComponentsInChildren<Text>()[0].text = "" + i.ToString("00");
+				//add situations
+				ButtonSchedule buttonSchedule = hour.GetComponentInChildren<ButtonSchedule>();
+				ScheduledSituation s = schedule.getSituationForHour(i);
+				buttonSchedule.Init(s != null ? s.Situation : null, s != null ? s.Permament : false, this);
+				i++;
+			}
 		}
 		//prepare situation buttons
 		Transform situationsTransform = transform.GetChild(1).GetChild(1);
@@ -40,6 +57,8 @@ public class PanelSchedule : MonoBehaviour {
 			}
 			j++;
 		}
+
+		
 	}
 
 	internal void PropositionWasSelected(Situation situation) {

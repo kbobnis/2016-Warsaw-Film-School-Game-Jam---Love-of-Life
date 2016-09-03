@@ -13,7 +13,11 @@ internal class XmlLoader {
 			string id = parameterXml.Attributes["id"].Value;
 			float? maxValue = parameterXml.Check("maxValue") ? float.Parse(parameterXml.Attributes["maxValue"].Value) : default(float?);
 			float startValue = parameterXml.Check("startValue") ? float.Parse(parameterXml.Attributes["startValue"].Value) : 0;
-			parameters.Add(new Parameter(id, maxValue, startValue));
+			if (!parameterXml.Check("text")) {
+				throw new Exception("There is no text in parameter " + id);
+			}
+			string text = parameterXml.Attributes["text"].Value;
+			parameters.Add(new Parameter(id, maxValue, startValue, text));
 		}
 		return parameters;
 	}
@@ -23,8 +27,9 @@ internal class XmlLoader {
 		foreach (XmlNode scheduledSituation in model.GetElementsByTagName("schedule")[0].ChildNodes) {
 			int from = int.Parse(scheduledSituation.Attributes["from"].Value);
 			int duration = int.Parse(scheduledSituation.Attributes["duration"].Value);
+			bool isPermament = scheduledSituation.Check("isPermament") ? scheduledSituation.Attributes["isPermament"].Value == "true" : false;
 			Situation situation = situations.First(t => t.Id == scheduledSituation.Attributes["id"].Value);
-			schedule.AddSituation(from, duration, situation, true);
+			schedule.AddSituation(from, duration, situation, isPermament);
 		}
 		return schedule;
 	}
