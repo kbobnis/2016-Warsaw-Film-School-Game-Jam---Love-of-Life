@@ -2,89 +2,178 @@
 	<parameters>
 		<param id="planesCount" />
 		<param id="materialsCount" />
-		<param id="walletStatus" />
+		<param id="walletStatus" startValue="500"/>
 		<param id="fridgeStatus" maxValue="100" />
-		<param id="koncentration" maxValue="1"/>
-		<param id="freshness" maxValue="1"/>
-		
+		<param id="concentration" maxValue="1"/>
+		<param id="freshness" maxValue="240"/>
+
 		<param id="rent" startValue="100" />
 		<param id="constructionSkills" />
 		<param id="biznesCompetence" />
 		<param id="happiness" />
 		<param id="deltaHappiness" />
 	</parameters>
-	
+
 	<time>
 		<change what="walletStatus" per="720" value="-1 * rent" />
 		<change what="fridgeStatus" per="24" value="-4" />
+		<change what="freshness" per="0.5" value="-5"/>
 	</time>
-	
+
 	<schedule default="house">
-		<situation from="8.00" to="16.30" id="work"/>
-		<situation from="12.00" to="12.30" id="brake"/>
-	
+		<scheduledSituation from="8:00" duration="4" id="work"/>
+		<scheduledSituation from="12:00" duration="0.5" id="brake"/>
+		<scheduledSituation from="12.5" duration="4" id="work"/>
+	</schedule>
+
 	<events chance="0.1" />
-	
+
 	<situations>
 		<!-- wasting time -->
-		<situation id="house" deafault="true"  >
+		<situation id="house">
 			<change what="concentration" value="0.1" />
 			<change what="walletStatus" value="0.1 * rent" />
-			<change what="biznesCompetence"
-			
+
 			<event
-				id="planeParty" 
-				text="znajomi wpadli na Plane Party. Imprreza była przednia!" 
-				maxTime="2" 
+				id="planeParty"
+				text="Znajomi wpadli na Plane Party. Impreza była przednia!"
+				maxTime="2"
 				depleteText="zbarakło materiałów na zabawę. Imprezowicze rozeszli się do domów"
-				interupText="Rozsiadłeś się w fotelu"
+				interruptText="Rozsiadłeś się w fotelu"
 				>
 				<change what="happiness" value="0.5"/>
 				<change what="happiness" maxValue="0.1"/>
 				<change what="fridgeStatus" value="-5"/>
 				<change what="planesCount" value="-10"/>
 			</event>
-			
+
+			<event
+				id="flood"
+				chance="0.01"
+				text="Z pęknietej rury leje sie woda. MOJE SAMOLOTY!"
+				maxTime="4"
+				canBeInterrupted="false"
+			>
+				<change what="planesCount" value="-10"/>
+				<change what="happiness" value="-5"/>
+				<change what="freshness" value="-1"/>
+				<change what="walletStatus" value="-10"/>
+
+			</event>
+
 		</situation>
-		
+
 		<situation id="sleep"  >
 			<change what="concentration" value="0.2" />
 			<change what="freshness" value="0.1" />
-			
+
 			<event
 				id="sweetDreams"
 				text="Przyśnił ci się model doskonały"
-				>
+				interruptText="Jeszcze nie czas wstawać więc idziesz spać dalej"
+				maxTime="2"
+				/>
+			<change what="happiness" value="1"/>
 		</situation>
-		
+
 		<situation id="shopping"  >
 			<change what="walletStatus" value="-10" />
 			<change what="fridgeStatus" value="10"/>
 			<change what="materialsCount" value="10"/>
 			<change what="concentration" value="-0.2" />
 			<change what="freshness" value="-0.1" />
+			<event
+				id="sale"
+				text="Trafiasz na przeceny. Wielka Encyklopiedia Samolotów wygląda bardzo interesująco"
+				maxTime="0.5"
+			>
+				<change id="constructionSkills" value="2"/>
+			</event>
+
+			<event
+				id="lotteryWin"
+				text="Jednak warto było wydać 5zł na los"
+				maxTime="2"
+			>
+				<change what="walletStatus" value="100"/>
+				<change what="happiness" value="0.5"/>
+			</event>
+
+			<event
+				id="Lotto"
+				chance="0.0000007"
+				text="Hurra! Trafiasz szóstkę w totolotka!"
+				maxTime="1"
+			>
+				<change id="walletStatus" value="2000000"/>
+				<change id="happiness" value="20"/>
+			</event>
+
+			<event
+				id="lotteryLose"
+				text="Niestety, tym razem nie udało się wygrać..."
+				maxTime="0.25"
+				canBeInterrupted="false"
+			>
+				<change id="walletStatus" value="-20"/>
+				<change id="happiness" value="-8"/>
+
+			</event>
+
 		</situation>
-		
+
 		<situation id="buildingPlanes" >
 			<change what="planesCount" value="constructionSkills * 0.1 + 10"/>
 			<change what="materialsCount" value="-10"/>
 			<change what="concentration" value="-0.2" />
 			<change what="freshness" value="-0.1" />
+
+			<event
+				id="interruption"
+				text="Sąsiedzi postanowili urządzić dyskotękę i nie możesz się skupić"
+				maxTime="2"
+			>
+				<change what="happines" value="-15"/>
+				<change what="materialsCount" value="-5"/>
+				<change what="freshness" value="-2"/>
+				<change what="concetration" value="-2"/>
+
+			</event>
+
 		</situation>
-		
+
 		<situation id="throwingPlanes" >
 			<change what="happiness" value="constructionSkills * 0.1 + 1"/>
+			<change what="freshness" value="-0.1"/>
 		</situation>
-		
+
+		<situation id="upgradeBuildingsSkills">
+			<change what="constructionSkills" value="0.5"/>
+			<change what="freshness" value="-0.3"/>
+		</situation>
+
 		<situation id="work" >
 			<change what="walletStatus" value="biznesCompetence * concentration * 0.5"/>
 			<change what="concentration" value="-0.2" >
 			</change>
 			<change what="freshness" value="-0.1" />
-		</situation/>
-		
-		<situation id="brake" selectable="false">
 		</situation>
-		
+
+		<situataion id="schooling">
+			<change what="biznesCompetence" value="0.5"/>
+			<change what="freshness" value="1"/>
+		</situataion>
+
+		<situation id="brake" selectable="false">
+			<event
+				id="paperHunt"
+				text="Widzisz ryzę papieru. Dzisiejszy wieczór będzie pracowity..."
+				maxTime="2"
+			>
+				<change what="materialsCount" value="10"/>
+			</event>
+
+		</situation>
+
 	</situations>
 </root>
