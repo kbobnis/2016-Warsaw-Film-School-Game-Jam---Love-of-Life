@@ -5,9 +5,8 @@ internal class Schedule {
 
 	private List<ScheduledSituation> situations = new List<ScheduledSituation>();
 
-	internal void AddSituation(float from, float duration, Situation situation) {
-
-		ScheduledSituation ss = new ScheduledSituation(from, duration, situation);
+	internal void AddSituation(float from, int duration, Situation situation, bool permament) {
+		ScheduledSituation ss = new ScheduledSituation(from, duration, situation, permament);
 		foreach(ScheduledSituation ssTmp in situations) {
 			if (AreOverlapping(ssTmp, ss)) {
 				throw new Exception("Schedules are overlapping: " + ss + ", and: " + ssTmp);
@@ -26,19 +25,12 @@ internal class Schedule {
 		return finish > ss.From;
 	}
 
-	internal class ScheduledSituation {
-		public readonly float Duration;
-		public readonly float From;
-		public readonly Situation Situation;
-
-		public ScheduledSituation(float from, float duration, Situation situation) {
-			From = from;
-			Duration = duration;
-			Situation = situation;
+	internal ScheduledSituation getSituationForHour(int hour) {
+		foreach(ScheduledSituation ss in situations) {
+			if (hour == ss.From || (hour > ss.From && hour < ss.From + ss.Duration)) {
+				return ss;
+			}
 		}
-
-		public override string ToString() {
-			return Situation.Id + " from " + From + " duration " + Duration;
-		}
+		return null;
 	}
 }

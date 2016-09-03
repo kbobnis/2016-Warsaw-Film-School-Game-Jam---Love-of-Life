@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Game : MonoBehaviour {
 
+	public PanelSchedule PanelSchedule;
+
 	// Use this for initialization
 	void Awake () {
 		
@@ -19,7 +21,8 @@ public class Game : MonoBehaviour {
 		List<Parameter> parameters = XmlLoader.LoadParameters(model);
 		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
 		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
-		int dolce = 2;
+
+		PanelSchedule.Init(scheduledSituations, situations);
 	}
 
 	// Update is called once per frame

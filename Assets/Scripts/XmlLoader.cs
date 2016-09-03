@@ -21,10 +21,10 @@ internal static List<Parameter> LoadParameters(XmlDocument model) {
 	internal static Schedule LoadSchedule(XmlDocument model, List<Situation> situations) {
 		Schedule schedule = new Schedule();
 		foreach(XmlNode scheduledSituation in model.GetElementsByTagName("schedule")[0].ChildNodes) {
-			float from = float.Parse( scheduledSituation.Attributes["from"].Value) ;
-			float duration = float.Parse( scheduledSituation.Attributes["duration"].Value);
+			int from = int.Parse( scheduledSituation.Attributes["from"].Value) ;
+			int duration = int.Parse( scheduledSituation.Attributes["duration"].Value);
 			Situation situation = situations.First(t => t.Id == scheduledSituation.Attributes["id"].Value);
-			schedule.AddSituation(from, duration, situation);
+			schedule.AddSituation(from, duration, situation, true);
 		}
 		return schedule;
 	}
@@ -34,9 +34,11 @@ internal static List<Parameter> LoadParameters(XmlDocument model) {
 		List<Situation> situations = new List<Situation>();
 		foreach(XmlNode situationXml in model.GetElementsByTagName("situations")[0].ChildNodes) {
 			string id = situationXml.Attributes["id"].Value;
+			string text = situationXml.Attributes["text"].Value;
+			bool selectable = situationXml.Check("selectable") ? (situationXml.Attributes["selectable"].Value == "false" ? false : true) : true;
 			List<Change> changes = LoadChanges(situationXml, parameters);
 			List<Event> events = LoadEvents(situationXml, parameters);
-			situations.Add(new Situation(id, changes, events));
+			situations.Add(new Situation(id, text, changes, events, selectable));
 		}
 		return situations;
 	}
