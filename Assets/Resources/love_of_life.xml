@@ -164,7 +164,7 @@
 
 		<situation id="buildingPlanes" text="Składanie samolotów">
 			<change what="planesCount" value="constructionSkills * 0.1 + 10 * concentration"/>
-			<change what="materialsCount" value="constuctionSkills * 0.1 + -10"/>
+			<change what="materialsCount" value="constructionSkills * 0.1 + -10"/>
 			<change what="concentration" value="-0.02" />
 			<change what="freshness" value="-0.1" />
 
@@ -299,7 +299,7 @@
 				maxTime="1"
 				canBeInterrupted="false"
 				>
-				<change what="salary" value="businessCompetence * concetration * salary" />
+				<change what="salary" value="businessCompetence * concentration * salary" />
 				<change what="happiness" value="1" />
 			</event>
 			<event
@@ -309,7 +309,7 @@
 				canBeInterrupted="false"
 				>
 				<change what="happiness" value="-2"/>
-				<change what="walletStatus" value="-1 * buznesCompetence * concetration * salary" />
+				<change what="walletStatus" value="-1 * businessCompetence * concentration * salary" />
 				<change what="freshness" value="5"/>
 			
 			</event>
