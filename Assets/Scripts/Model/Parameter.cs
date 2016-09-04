@@ -7,6 +7,8 @@ public class Parameter {
 	private float StartValue;
 	public readonly string Text;
 
+	private float ActualMaxValue;
+
 	private float _ActualValue;
 	private float PreviousValue;
 	public float ActualValue {
@@ -26,6 +28,9 @@ public class Parameter {
 		StartValue = startValue;
 		Text = text;
 		ActualValue = startValue;
+		if (MaxValue != null) {
+			ActualMaxValue = MaxValue.Value;
+		}
 	}
 
 	public override string ToString() {
@@ -40,6 +45,11 @@ public class Parameter {
 		bool changed = false;
 		foreach(Change c in s.Changes) {
 			if (c.What == this) {
+				if (c.MaxValueCalculation != null) {
+					float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
+				}
+				
+
 				float deltaValue = c.ValueCalculation.Calculate(timeDelta);
 				ActualValue += deltaValue;
 				if (MaxValue != null && ActualValue > MaxValue.Value) {
