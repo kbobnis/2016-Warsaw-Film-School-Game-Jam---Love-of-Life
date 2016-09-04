@@ -11,7 +11,11 @@ public class Schedule {
 		DefaultSituation = defaultSituation;
 	}
 
-	internal void AddSituation(float from, int duration, Situation situation, bool permament) {
+	internal void AddSituation(int from, int duration, Situation situation, bool permament) {
+		if (situation == null) {
+			RemoveSituation(from);
+			return;
+		}
 		ScheduledSituation ss = new ScheduledSituation(from, duration, situation, permament);
 		foreach(ScheduledSituation ssTmp in situations) {
 			if (AreOverlapping(ssTmp, ss)) {
@@ -19,6 +23,19 @@ public class Schedule {
 			}
 		}
 		situations.Add(ss);
+	}
+
+	private void RemoveSituation(int from) {
+		ScheduledSituation tmp = null;
+		foreach(ScheduledSituation ss in situations) {
+			if (ss.From == from) {
+				tmp = ss;
+			}
+		}
+
+		if (tmp != null) {
+			situations.Remove(tmp);
+		}
 	}
 
 	private bool AreOverlapping(ScheduledSituation ssTmp, ScheduledSituation ss) {
@@ -32,12 +49,16 @@ public class Schedule {
 	}
 
 	internal ScheduledSituation getSituationForHour(int hour) {
+		if (hour > 23) {
+			throw new Exception("There is no more hours in doba, but you gave: " + hour);
+		}
+
 		foreach(ScheduledSituation ss in situations) {
 			if (hour == ss.From || (hour > ss.From && hour < ss.From + ss.Duration)) {
 				return ss;
 			}
 		}
-		return null;
+		return null;// new ScheduledSituation(hour, 1, DefaultSituation, false);
 	}
 
 	internal void Update(int hour, Situation ss) {
