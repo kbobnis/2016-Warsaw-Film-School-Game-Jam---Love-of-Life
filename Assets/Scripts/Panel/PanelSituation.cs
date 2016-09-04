@@ -15,7 +15,7 @@ public class PanelSituation : MonoBehaviour {
 	}
 
 	internal void UpdateActiveSituation(Situation actualSituation) {
-		GetComponentsInChildren<Text>()[0].text = actualSituation.Text;
+		GetComponentsInChildren<Text>()[0].text = "W tej chwili: \n\n" + actualSituation.Text;
 		Game.Me.ActualSituation = actualSituation;
 	}
 

@@ -3,23 +3,13 @@
 public class Parameter {
 	
 	public readonly string Id;
-	private float? MaxValue;
+	public float? MaxValue;
 	private float StartValue;
 	public readonly string Text;
 
 	private float ActualMaxValue;
 
-	private float _ActualValue;
-	private float PreviousValue;
-	public float ActualValue {
-		set {
-			PreviousValue = _ActualValue;
-			_ActualValue = value;
-		}
-		get {
-			return _ActualValue;
-		}
-	}
+	public float ActualValue;
 	
 
 	public Parameter(string id, float? maxValue, float startValue, string text) {
@@ -37,29 +27,33 @@ public class Parameter {
 		return Id + " " + ActualValue + "/" + MaxValue + ", startValue: " + StartValue;
 	}
 
-	internal bool IsRising() {
-		return ActualValue > PreviousValue;
+	internal bool HasMaxValue() {
+		return MaxValue != null;
 	}
 
-	internal void UpdateValue(Situation s, float timeDelta) {
-		bool changed = false;
+	internal void UpdateValue(Situation s, float timeDelta, TimeChanges timeChanges) {
+		
 		foreach(Change c in s.Changes) {
 			if (c.What == this) {
-				if (c.MaxValueCalculation != null) {
-					float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
-				}
-				
-
-				float deltaValue = c.ValueCalculation.Calculate(timeDelta);
-				ActualValue += deltaValue;
-				if (MaxValue != null && ActualValue > MaxValue.Value) {
-					ActualValue = MaxValue.Value;
-				}
-				if (ActualValue <= 0) {
-					Game.Me.EndGame(this);
-				}
-				changed = deltaValue!=0;
+				UpdateWithChange(c, timeDelta);
 			}
+		}
+	}
+
+	private void UpdateWithChange(Change c, float timeDelta) {
+		if (c.MaxValueCalculation != null) {
+			float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
+			MaxValue += deltaMaxValue;
+		}
+
+		float deltaValue = c.ValueCalculation.Calculate(timeDelta);
+		ActualValue += deltaValue;
+		if (MaxValue != null && ActualValue > MaxValue.Value) {
+			ActualValue = MaxValue.Value;
+		}
+
+		if (ActualValue < -1) {
+			ActualValue = -1;
 		}
 	}
 }
