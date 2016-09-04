@@ -4,7 +4,7 @@
 		<param id="materialsCount" text="liczba materiałów" round="true"/>
 		<param id="walletStatus" text="zasobność portfela" startValue="500"/>
 		<param id="fridgeStatus" text="zapełnienie lodówki" maxValue="100" />
-		<param id="concentration" text="koncetracja" startValue="0.1" maxValue="1"/>
+		<param id="concentration" text="koncetracja" startValie="0.1" maxValue="1"/>
 		<param id="freshness" text="rześkość" maxValue="240"/>
 		<param id="rent" text="czynsz" startValue="100" />
 		<param id="constructionSkills" text="technika składania" minValue="1" maxValue="100"/>
@@ -36,22 +36,19 @@
 	<situations>
 		<!-- wasting time -->
 		<situation id="house" text="Marnowanie czasu">
-			<change what="concentration" value="0.1" />
-			<change what="walletStatus" value="0.1 * rent" />
-
+			<change what="concentration" value="-0.01" />
 			<event
 				id="planeParty"
 				text="Znajomi wpadli na Plane Party. Impreza była przednia!"
 				maxTime="2"
-				depleteText="zbarakło materiałów na zabawę. Imprezowicze rozeszli się do domów"
-				interruptText="Rozsiadłeś się w fotelu"
+				depleteText="zbarakło materiałów na zabawę. Imprezowicze rozeszli się do domów."
+				interruptText="Rozsiadłeś się w fotelu."
 				>
 				<change what="happiness" value="0.5"/>
 				<change what="happiness" maxValue="0.1"/>
 				<change what="fridgeStatus" value="-5"/>
 				<change what="planesCount" value="-10"/>
 			</event>
-
 			<event
 				id="flood"
 				chance="0.01"
@@ -65,12 +62,21 @@
 				<change what="walletStatus" value="-10"/>
 
 			</event>
+			<event
+				id="magazine"
+				text="Pora poczytać najnowszy numer Młodego Lotnika."
+				interruptText="Jeszcze jedna strona, to już ostatnia."
+				maxTime="1"
+				>
+				<change what="happiness" value="5"/>
+				<change what="constructionSkills" value="1"/>
+			</event>
 
 		</situation>
 
 		<situation id="sleep" text="Sen">
-			<change what="concentration" value="0.2" />
-			<change what="freshness" value="0.1" />
+			<change what="concentration" value="0.1" />
+			<change what="freshness" value="40" />
 
 			<event
 				id="sweetDreams"
@@ -80,13 +86,41 @@
 			>
 				<change what="happiness" value="1"/>
 			</event>
+			<event
+				id="nightmares"
+				chance="0.05"
+				text="Nie podchodź z ogniem do tych samolotów, nie zbliżaj się! NIEEEEE!"
+				interruptText="UFF, na szczęścieto tylko zły sen."
+				maxTime="3"
+				>
+				<change what="freshness" value="-40"/>
+			
+			</event>
+			<event
+				id="party"
+				text="Impreza za imprezą, jak tu spać?"
+				canBeInterrupted="false"
+				maxTime="2"
+				>
+				<change what="freshness" value="-20"/>
+				<change what="concentration" value="-0.05"/>
+			</event>
+			<event
+				id="deepSleep"
+				chance="0.05"
+				text="Samolociki, moje samolociki, dzisiaj śpimy razem"
+				canBeInterrupted="false"
+				maxTime="5"
+				>
+				<change what="concentration" maxValue="0.02"/>
+			</event>
 		</situation>
 
 		<situation id="shopping" text="Zakupy">
 			<change what="walletStatus" value="-10" />
 			<change what="fridgeStatus" value="10"/>
 			<change what="materialsCount" value="10"/>
-			<change what="concentration" value="-0.2" />
+			<change what="concentration" value="-0.02" />
 			<change what="freshness" value="-0.1" />
 			<event
 				id="sale"
@@ -96,7 +130,6 @@
 			>
 				<change what="constructionSkills" value="2"/>
 			</event>
-
 			<event
 				id="lotteryWin"
 				text="Jednak warto było wydać 5zł na los"
@@ -106,7 +139,6 @@
 				<change what="walletStatus" value="100"/>
 				<change what="happiness" value="0.5"/>
 			</event>
-
 			<event
 				id="Lotto"
 				chance="0.0000007"
@@ -117,7 +149,6 @@
 				<change what="walletStatus" value="2000000"/>
 				<change what="happiness" value="20"/>
 			</event>
-
 			<event
 				id="lotteryLose"
 				text="Niestety, tym razem nie udało się wygrać..."
@@ -132,9 +163,9 @@
 		</situation>
 
 		<situation id="buildingPlanes" text="Składanie samolotów">
-			<change what="planesCount" value="constructionSkills * 0.1 + 10"/>
-			<change what="materialsCount" value="constructionSkills * 0.1 + -10"/>
-			<change what="concentration" value="-0.2" />
+			<change what="planesCount" value="constructionSkills * 0.1 + 10 * concentration"/>
+			<change what="materialsCount" value="constuctionSkills * 0.1 + -10"/>
+			<change what="concentration" value="-0.02" />
 			<change what="freshness" value="-0.1" />
 
 			<event
@@ -158,12 +189,22 @@
 				<change what="planesCount" value="10"/>
 				<change what="materialsCount" value="10"/>
 			</event>
+			<event 
+				id="event"
+				text="Czyżby zlot amatorów lotnictwa?"
+				interruptText="Ale nie taki, tylko papier się liczy!"
+				maxTime="2"
+				>
+				<change what="constructionSkills" value="1"/>
+			
+			</event>
 
 		</situation>
 
 		<situation id="throwingPlanes" text="Puszczanie samolotów">
 			<change what="happiness" value="constructionSkills * 0.1 + 10"/>
-			<change what="freshness" value="-0.1"/>
+			<change what="freshness" value="-12"/>
+			<change what="planesCount" value="-20"/>
 			<event
 				id="record"
 				text="Tak, tak, TAK! JEST REKORD!!"
@@ -173,11 +214,58 @@
 				<change what="happiness" value="10"/>
 				<change what="freshness" value="0.1"/>
 			</event>
+			<event
+				id="money"
+				text="A co to tam leży?"
+				interruptText="Nie, samoloty są najważniejsze."
+				maxTime="0.5"
+				>
+				<change what="walletStatus" value="10"/>
+				<change what="happiness" value="1"/>
+			</event>
+			<event
+				id="passion"
+				text="Dołączają do Ciebie kolejni oblatywacze. Puszczanie samolotów jest fajne!"
+				interruptText="Potrzeba więcej czasu na samoloty!"
+				maxTime="2"
+				>
+				<change what="happiness"  value="10"/>
+			<change what="freshness" value="12"/>
+			</event>
+			<event
+				id="raining"
+				text="O, w deszczu jeszcze nikt nie puszczał samolotów."
+				interruptText="Pora zbierać zabawki i iść do domu."
+				depleateText="Mokre, wszystkie przemoczone."
+				maxTime="2"
+				>
+				<change what="planesCount" value="-10"/>
+				<change what="freshness" value="12"/>
+			</event>
+			<event
+				id="windy"
+				text="Ale wieje, ciekawe czy dziś padnie rekord?"
+				interruptText="Ej, ale tej czapki to ja potrzebuję!"
+				depleatedText="Gdzie moje samoloty?"
+				maxTime="2"
+				>
+				<change what="happiness" value="5"/>
+				<change what="planesCount" value="-8"/>
+				<change what="freshness" value="-6"/>s
+			</event>
+			<event
+				id="authority"
+				text="&quot;Tutaj nie wolno śmiecić!&quot;"
+				interruptText="To nie są śmieci, to są samoloty!"
+				maxTime="1"
+				>
+				<change what="happiness" value="-10"/>
+			</event>
 		</situation>
 
 		<situation id="upgradeBuildingsSkills" text="Ulepszanie techniki">
 			<change what="constructionSkills" value="0.5"/>
-			<change what="freshness" value="-0.3"/>
+			<change what="freshness" value="-6"/>
 			<change what="fridgeStatus" value="-5"/>
 			<event
 				id="idea"
@@ -202,7 +290,7 @@
 
 		<situation id="work" text="Praca">
 			<change what="walletStatus" value="businessCompetence * concentration * salary"/>
-			<change what="concentration" value="-0.2"/>
+			<change what="concentration" value="-0.02"/>
 			<change what="freshness" value="-5" />
 		
 			<event
@@ -211,17 +299,17 @@
 				maxTime="1"
 				canBeInterrupted="false"
 				>
-				<change what="salary" value="businessCompetence * concentration * salary" />
+				<change what="salary" value="businessCompetence * concetration * salary" />
 				<change what="happiness" value="1" />
 			</event>
 			<event
-				id="sleepinees"
+				id="sleepiness"
 				text="Całonocne składanie modeli to jednak nie był dobry pomysł..."
 				maxTime="2"
 				canBeInterrupted="false"
 				>
 				<change what="happiness" value="-2"/>
-				<change what="walletStatus" value="-1 * businessCompetence * concentration * salary" />
+				<change what="walletStatus" value="-1 * buznesCompetence * concetration * salary" />
 				<change what="freshness" value="5"/>
 			
 			</event>
@@ -239,8 +327,8 @@
 		</situation>
 
 		<situation id="schooling" text="Nauka">
-			<change what="businessCompetence" value="0.01"/>
-			<change what="freshness" value="-1"/>
+			<change what="businessCompetence" value="0.01 * concentration"/>
+			<change what="freshness" value="-6"/>
 			<event
 				id="hookey"
 				text="Dzisiaj lepiej iść na piwo niż na zajęcia"
@@ -267,7 +355,7 @@
 				interruptText="Nie! Co ja zrobiłem? Weno, wracaj!"
 				maxTime="1"
 				>
-				<change what="businessCompetence" value="0.01"/>
+				<change what="businessCompetence" value="0.01 * concentration"/>
 			</event>
 			<event
 				id="moneyLuck"
@@ -280,11 +368,11 @@
 			</event>
 			<event
 				id="knowledgeLuck"
-				text="A to co? Czyżbynajnowszy numer Młodego Lotnika?"
+				text="A to co? Czyżby najnowszy numer Młodego Lotnika?"
 				interruptText="Pora wracać na zajęcia"
 				maxTime="0.5"
 				>
-				<change what="businessCompetence" value="0.08"/>
+				<change what="constructionSkills" value="1"/>
 				<change what="happiness" value="5"/>
 			</event>
 		</situation>
