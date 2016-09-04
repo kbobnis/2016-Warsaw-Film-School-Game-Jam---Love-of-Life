@@ -3,7 +3,7 @@
 		<param id="planesCount" text="Liczba samolotów" round="true"/>
 		<param id="materialsCount" text="liczba materiałów" round="true"/>
 		<param id="walletStatus" text="zasobność portfela" startValue="500"/>
-		<param id="fridgeStatus" text="zapełnienie lodówki" maxValue="100" />
+		<param id="fridgeStatus" text="zapełnienie lodówki" maxValue="240" />
 		<param id="concentration" text="koncetracja" startValie="0.1" maxValue="1"/>
 		<param id="freshness" text="rześkość" maxValue="240"/>
 		<param id="rent" text="czynsz" startValue="100" />
@@ -266,7 +266,7 @@
 		<situation id="upgradeBuildingsSkills" text="Ulepszanie techniki">
 			<change what="constructionSkills" value="0.5"/>
 			<change what="freshness" value="-6"/>
-			<change what="fridgeStatus" value="-5"/>
+			<change what="fridgeStatus" value="-0.05"/>
 			<event
 				id="idea"
 				text="Wczorajszy film podsunął Ci pewien pomysł..."
