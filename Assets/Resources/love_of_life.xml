@@ -1,16 +1,16 @@
 <root>
 	<parameters>
-		<param id="planesCount" text="Liczba samolotów" round="true"/>
-		<param id="materialsCount" text="liczba materiałów" round="true"/>
+		<param id="planesCount" text="Liczba samolotów" startValue="24" round="true"/>
+		<param id="materialsCount" text="liczba materiałów" startValue="24" round="true"/>
 		<param id="walletStatus" text="zasobność portfela" startValue="500"/>
-		<param id="fridgeStatus" text="zapełnienie lodówki" maxValue="240" />
-		<param id="concentration" text="koncetracja" startValie="0.1" maxValue="1"/>
-		<param id="freshness" text="rześkość" maxValue="240"/>
+		<param id="fridgeStatus" text="zapełnienie lodówki" startValue="120" maxValue="240" />
+		<param id="concentration" text="koncetracja" startValue="0.1" maxValue="1"/>
+		<param id="freshness" text="rześkość" startValue="120" maxValue="240"/>
 		<param id="rent" text="czynsz" startValue="100" />
 		<param id="constructionSkills" text="technika składania" minValue="1" maxValue="100"/>
 		<param id="businessCompetence" text="kompetencje biznesowe" startValue="0.5" maxValue="2"/>
 		<param id="happiness" text="szczęście" startValue="10"/>
-		<param id="salary" text="wynagrodzenie" startValue="20"/>
+		<param id="salary" text="wynagrodzenie" startValue="15"/>
 	</parameters>
 
 	<time normalSpeed="10" fasterSpeed="300">
@@ -75,8 +75,8 @@
 		</situation>
 
 		<situation id="sleep" text="Sen">
-			<change what="concentration" value="0.1" />
-			<change what="freshness" value="40" />
+			<change what="concentration" value="0.001" />
+			<change what="freshness" value="0.09" />
 
 			<event
 				id="sweetDreams"
@@ -164,7 +164,7 @@
 
 		<situation id="buildingPlanes" text="Składanie samolotów">
 			<change what="planesCount" value="constructionSkills * 0.1 + 10 * concentration"/>
-			<change what="materialsCount" value="constructionSkills * 0.1 + -10"/>
+			<change what="materialsCount" value="-1 * constructionSkills * 0.1 + -10"/>
 			<change what="concentration" value="-0.02" />
 			<change what="freshness" value="-0.1" />
 
@@ -203,8 +203,8 @@
 
 		<situation id="throwingPlanes" text="Puszczanie samolotów">
 			<change what="happiness" value="constructionSkills * 0.1 + 10"/>
-			<change what="freshness" value="-12"/>
-			<change what="planesCount" value="-20"/>
+			<change what="freshness" value="-0.012"/>
+			<change what="planesCount" value="-0.02"/>
 			<event
 				id="record"
 				text="Tak, tak, TAK! JEST REKORD!!"
@@ -264,9 +264,9 @@
 		</situation>
 
 		<situation id="upgradeBuildingsSkills" text="Ulepszanie techniki">
-			<change what="constructionSkills" value="0.5"/>
-			<change what="freshness" value="-6"/>
-			<change what="fridgeStatus" value="-0.05"/>
+			<change what="constructionSkills" value="0.002"/>
+			<change what="freshness" value="-0.06"/>
+			<change what="fridgeStatus" value="-0.005"/>
 			<event
 				id="idea"
 				text="Wczorajszy film podsunął Ci pewien pomysł..."
@@ -289,9 +289,9 @@
 		</situation>
 
 		<situation id="work" text="Praca">
-			<change what="walletStatus" value="businessCompetence * concentration * salary"/>
-			<change what="concentration" value="-0.02"/>
-			<change what="freshness" value="-5" />
+			<change what="walletStatus" value="0.01 * concentration * businessCompetence * salary"/>
+			<change what="concentration" value="-0.0002"/>
+			<change what="freshness" value="-0.01" />
 		
 			<event
 				id="rise"
@@ -327,8 +327,8 @@
 		</situation>
 
 		<situation id="schooling" text="Nauka">
-			<change what="businessCompetence" value="0.01 * concentration"/>
-			<change what="freshness" value="-6"/>
+			<change what="businessCompetence" value="0.001 * concentration"/>
+			<change what="freshness" value="-0.06"/>
 			<event
 				id="hookey"
 				text="Dzisiaj lepiej iść na piwo niż na zajęcia"
