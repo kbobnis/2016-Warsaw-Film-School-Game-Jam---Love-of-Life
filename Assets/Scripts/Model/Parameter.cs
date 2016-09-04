@@ -52,8 +52,8 @@ public class Parameter {
 			ActualValue = MaxValue.Value;
 		}
 
-		if (ActualValue < -1) {
-			ActualValue = -1;
+		if (ActualValue < 0) {
+			ActualValue = - 0.01f;
 		}
 	}
 }

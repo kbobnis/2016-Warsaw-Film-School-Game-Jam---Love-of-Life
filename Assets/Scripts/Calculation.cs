@@ -50,7 +50,7 @@ public class Calculation {
 			i += 2;
 		}
 		//add pairs
-		return res;
+		return res * timeDelta;
 	}
 
 	class ElementNumber : Element {
