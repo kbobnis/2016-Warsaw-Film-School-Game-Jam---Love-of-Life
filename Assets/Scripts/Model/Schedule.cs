@@ -4,7 +4,6 @@ using System.Collections.Generic;
 public class Schedule {
 
 	public readonly Situation DefaultSituation;
-	private Situation ActualSituation;
 	private List<ScheduledSituation> situations = new List<ScheduledSituation>();
 
 	public Schedule(Situation defaultSituation) {
@@ -16,6 +15,18 @@ public class Schedule {
 			RemoveSituation(from);
 			return;
 		}
+
+		//if duration bigger than 1 then cut it to pieces;
+		if (duration < 1) {
+			throw new Exception("You can not add situation with duration 0");
+		}
+		if (duration > 1) {
+			for (int i = 0; i < duration; i++) {
+				AddSituation(from + i, 1, situation, permament);
+			}
+			return;
+		}
+
 		ScheduledSituation ss = new ScheduledSituation(from, duration, situation, permament);
 		foreach(ScheduledSituation ssTmp in situations) {
 			if (AreOverlapping(ssTmp, ss)) {

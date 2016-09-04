@@ -48,6 +48,7 @@ public class Game : MonoBehaviour {
 
 		PanelSchedule.Init(scheduledSituations, situations, Parameters);
 		PanelCenter.Init(PanelSchedule.Schedule, Parameters);
+		HourHasChanged(0);
 	}
 
 	internal void EndGame(Parameter parameter) {
@@ -68,7 +69,7 @@ public class Game : MonoBehaviour {
 
 	private void UpdateParameters(float timeDelta) {
 		foreach(Parameter p in Parameters) {
-			p.UpdateValue(ActualSituation, timeDelta);
+			p.UpdateValue(ActualSituation, timeDelta, Model.TimeChanges);
 		}
 	}
 

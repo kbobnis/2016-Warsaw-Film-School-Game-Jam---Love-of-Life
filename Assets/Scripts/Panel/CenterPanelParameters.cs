@@ -29,7 +29,16 @@ public class CenterPanelParameters : MonoBehaviour {
 		int i = 0;
 		foreach(Parameter p in Parameters) {
 			GameObject parameterGO = transform.GetChild(i).gameObject;
-			parameterGO.GetComponentInChildren<Text>().text = p.Text + "\n " + p.ActualValue.ToString("0.0") + (p.IsRising()?" UP":"");
+
+			Transform valuePanel = parameterGO.transform.GetChild(1);
+			valuePanel.GetChild(0).gameObject.SetActive(p.HasMaxValue());
+			if (p.HasMaxValue()) {
+				valuePanel.GetChild(0).GetComponent<Image>().fillAmount = p.ActualValue / p.MaxValue.Value;
+			}
+
+			valuePanel.GetChild(1).GetComponent<Text>().text = p.ActualValue.ToString("0.0");
+
+			parameterGO.GetComponentInChildren<Text>().text = p.Text;
 			i++;
 		}
 	}
