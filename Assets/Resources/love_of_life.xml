@@ -69,8 +69,8 @@
 		</situation>
 
 		<situation id="sleep" text="Sen">
-			<change what="concentration" value="0.2" />
-			<change what="freshness" value="0.1" />
+			<change what="concentration" value="0.1" />
+			<change what="freshness" value="40" />
 
 			<event
 				id="sweetDreams"
@@ -79,6 +79,16 @@
 				maxTime="2"
 			>
 				<change what="happiness" value="1"/>
+			</event>
+			<event
+				id="nightmares"
+				chance="0.05"
+				text="Nie podchodź z ogniem do tych samolotów, nie zbliżaj się! NIEEEEE!"
+				interruptText="UFF, na szczęścieto tylko zły sen."
+				maxTime="3"
+				>
+				<change what="freshness" value="-40"/>
+			
 			</event>
 		</situation>
 
@@ -96,7 +106,6 @@
 			>
 				<change what="constructionSkills" value="2"/>
 			</event>
-
 			<event
 				id="lotteryWin"
 				text="Jednak warto było wydać 5zł na los"
@@ -106,7 +115,6 @@
 				<change what="walletStatus" value="100"/>
 				<change what="happiness" value="0.5"/>
 			</event>
-
 			<event
 				id="Lotto"
 				chance="0.0000007"
@@ -117,7 +125,6 @@
 				<change what="walletStatus" value="2000000"/>
 				<change what="happiness" value="20"/>
 			</event>
-
 			<event
 				id="lotteryLose"
 				text="Niestety, tym razem nie udało się wygrać..."
