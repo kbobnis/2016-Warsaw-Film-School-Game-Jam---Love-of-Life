@@ -13,6 +13,8 @@ public class Game : MonoBehaviour {
 	public PanelCenter PanelCenter;
 
 	public float GameTime;
+	public Situation ActualSituation;
+	public List<Parameter> Parameters;
 	public int GameTimeNormalized {
 		get {
 			return (int)GameTime % 24;
@@ -34,25 +36,39 @@ public class Game : MonoBehaviour {
 		string pattern = "(<!--.*?--\\>)";
 		model.InnerXml = Regex.Replace(model.InnerXml, pattern, string.Empty, RegexOptions.Singleline);
 
-		List<Parameter> parameters = XmlLoader.LoadParameters(model);
-		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
+		Parameters = XmlLoader.LoadParameters(model);
+		List<Situation> situations = XmlLoader.LoadSituations(model, Parameters);
 		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
 
-		TimeChanges timeChanges = XmlLoader.LoadTime(model, parameters);
+		TimeChanges timeChanges = XmlLoader.LoadTime(model, Parameters);
 		ActualGameSpeed = timeChanges.NormalSpeed;
+		ActualSituation = scheduledSituations.getSituationForHour(0, true).Situation;
 
 		Model = new Model(timeChanges);
 
-		PanelSchedule.Init(scheduledSituations, situations, parameters);
+		PanelSchedule.Init(scheduledSituations, situations, Parameters);
+		PanelCenter.Init(PanelSchedule.Schedule, Parameters);
+	}
+
+	internal void EndGame(Parameter parameter) {
+		
 	}
 
 	// Update is called once per frame
 	void Update () {
 		int gameTimeNormalized = GameTimeNormalized;
-		GameTime += Time.deltaTime / 60f * ActualGameSpeed;
+		float timeDelta = Time.deltaTime / 60f * ActualGameSpeed;
+		UpdateParameters(timeDelta);
+		GameTime += timeDelta;
 		int gameTimeNormalizedAfter = GameTimeNormalized;
 		if(gameTimeNormalizedAfter != gameTimeNormalized) {
 			HourHasChanged(gameTimeNormalizedAfter);
+		}
+	}
+
+	private void UpdateParameters(float timeDelta) {
+		foreach(Parameter p in Parameters) {
+			p.UpdateValue(ActualSituation, timeDelta);
 		}
 	}
 
@@ -71,7 +87,7 @@ public class Game : MonoBehaviour {
 
 	public void ChangeToPanelCenter() {
 		PanelCenter.gameObject.SetActive(true);
-		PanelCenter.UpdateSchedule(PanelSchedule.Schedule);
+		PanelCenter.UpdateSchedule();
 		PanelSchedule.gameObject.SetActive(false);
 	}
 }

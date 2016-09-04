@@ -16,6 +16,7 @@ public class PanelSituation : MonoBehaviour {
 
 	internal void UpdateActiveSituation(Situation actualSituation) {
 		GetComponentsInChildren<Text>()[0].text = actualSituation.Text;
+		Game.Me.ActualSituation = actualSituation;
 	}
 
 	internal void HourHasChanged(int newHour, Situation ss) {

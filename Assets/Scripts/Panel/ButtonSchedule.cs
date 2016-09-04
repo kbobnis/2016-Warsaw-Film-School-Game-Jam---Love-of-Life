@@ -41,12 +41,10 @@ public class ButtonSchedule : MonoBehaviour {
 		}
 		if (Ss != null) {
 			Ss = null;
-			Debug.Log("will update schedule.");
 			PanelSchedule.ScheduleUpdated(MyHour, Ss);
 		}
 		if (ProposedSituation != null && Ss == null) {
 			Ss = ProposedSituation;
-			Debug.Log("will update schedule.");
 			PanelSchedule.ScheduleUpdated(MyHour, Ss);
 		}
 		PanelSchedule.UnselectProposed();

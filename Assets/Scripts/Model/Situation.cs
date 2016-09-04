@@ -3,7 +3,7 @@
 public class Situation {
 	public readonly string Id;
 	public readonly string Text;
-	private List<Change> Changes;
+	public readonly List<Change> Changes;
 	private List<Event> Events;
 	public readonly bool Selectable;
 

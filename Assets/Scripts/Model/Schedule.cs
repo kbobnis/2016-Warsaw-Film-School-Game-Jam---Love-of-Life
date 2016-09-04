@@ -48,7 +48,7 @@ public class Schedule {
 		return finish > bigger.From;
 	}
 
-	internal ScheduledSituation getSituationForHour(int hour) {
+	internal ScheduledSituation getSituationForHour(int hour, bool includeDefault=false) {
 		if (hour > 23) {
 			throw new Exception("There is no more hours in doba, but you gave: " + hour);
 		}
@@ -58,7 +58,7 @@ public class Schedule {
 				return ss;
 			}
 		}
-		return null;// new ScheduledSituation(hour, 1, DefaultSituation, false);
+		return includeDefault?new ScheduledSituation(hour, 1, DefaultSituation, false):null;
 	}
 
 	internal void Update(int hour, Situation ss) {

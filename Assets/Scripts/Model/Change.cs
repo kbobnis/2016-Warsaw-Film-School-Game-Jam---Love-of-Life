@@ -1,8 +1,8 @@
 ﻿public class Change {
 
-	private Calculation ValueCalculation;
+	public readonly Calculation ValueCalculation;
 	private Calculation MaxValueCalculation;
-	private Parameter What;
+	public readonly Parameter What;
 	public readonly float PerTime;
 
 	public Change(Parameter what, Calculation valueCalculation, Calculation maxValueCalculation, float perTime) {

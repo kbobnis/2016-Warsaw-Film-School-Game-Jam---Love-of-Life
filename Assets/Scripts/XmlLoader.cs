@@ -119,8 +119,8 @@ internal class XmlLoader {
 					if (what == null) {
 						throw new Exception("There is no parameter with id: " + changeXml.Attributes["what"].Value);
 					}
-					Calculation valueCalculation = changeXml.Check("value") ? new Calculation(changeXml.Attributes["value"].Value) : null;
-					Calculation maxValueCalculation = changeXml.Check("maxValue") ? new Calculation(changeXml.Attributes["maxValue"].Value) : null;
+					Calculation valueCalculation = changeXml.Check("value") ? new Calculation(changeXml.Attributes["value"].Value, parameters) : null;
+					Calculation maxValueCalculation = changeXml.Check("maxValue") ? new Calculation(changeXml.Attributes["maxValue"].Value, parameters) : null;
 					if (valueCalculation != null && maxValueCalculation != null) {
 						throw new Exception("You can only set one calculation, but you have set two. value and maxValue.");
 					}
