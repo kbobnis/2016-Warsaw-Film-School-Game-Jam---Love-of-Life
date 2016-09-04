@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-internal class Event {
+public class Event {
 	private string Id;
 	private string Text;
 	private string DepleteText;

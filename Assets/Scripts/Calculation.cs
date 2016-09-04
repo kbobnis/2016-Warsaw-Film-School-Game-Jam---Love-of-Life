@@ -1,4 +1,4 @@
-﻿internal class Calculation {
+﻿public class Calculation {
 	private string Value;
 
 	public Calculation(string value) {

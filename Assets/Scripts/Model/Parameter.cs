@@ -1,4 +1,4 @@
-﻿internal class Parameter {
+﻿public class Parameter {
 	
 	public readonly string Id;
 	private float? MaxValue;

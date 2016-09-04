@@ -23,15 +23,43 @@ internal class XmlLoader {
 	}
 
 	internal static Schedule LoadSchedule(XmlDocument model, List<Situation> situations) {
-		Schedule schedule = new Schedule();
+		XmlNode scheduleXml = model.GetElementsByTagName("schedule")[0];
+		Situation defaultSituation = situations.FirstOrDefault(t => t.Id == scheduleXml.Attributes["default"].Value);
+		if (defaultSituation == null) {
+			throw new Exception("When loading default situation. There is no situaion with id " + scheduleXml.Attributes["default"].Value + ".");
+		}
+		Schedule schedule = new Schedule(defaultSituation);
 		foreach (XmlNode scheduledSituation in model.GetElementsByTagName("schedule")[0].ChildNodes) {
 			int from = int.Parse(scheduledSituation.Attributes["from"].Value);
 			int duration = int.Parse(scheduledSituation.Attributes["duration"].Value);
 			bool isPermament = scheduledSituation.Check("isPermament") ? scheduledSituation.Attributes["isPermament"].Value == "true" : false;
 			Situation situation = situations.First(t => t.Id == scheduledSituation.Attributes["id"].Value);
 			schedule.AddSituation(from, duration, situation, isPermament);
+			
 		}
 		return schedule;
+	}
+
+	internal static TimeChanges LoadTime(XmlDocument model, List<Parameter> parameters) {
+		XmlNode timeXml = model.GetElementsByTagName("time")[0];
+		try {
+			if (!timeXml.Check("normalSpeed")) {
+				throw new Exception("There is no normalSpeed defined.");
+			}
+			float normalSpeed = float.Parse(timeXml.Attributes["normalSpeed"].Value);
+			if (!timeXml.Check("fasterSpeed")) {
+				throw new Exception("There is no fasterSpeed defined.");
+			}
+			float fasterSpeed = float.Parse(timeXml.Attributes["fasterSpeed"].Value);
+
+			List<Change> timeChanges = LoadChanges(timeXml, parameters);
+
+			return new TimeChanges(normalSpeed, fasterSpeed, timeChanges);
+
+		} catch(Exception e) {
+			throw new Exception("When loading time: " + e.Message);
+		}
+
 	}
 
 	internal static List<Situation> LoadSituations(XmlDocument model, List<Parameter> parameters) {
@@ -96,7 +124,12 @@ internal class XmlLoader {
 					if (valueCalculation != null && maxValueCalculation != null) {
 						throw new Exception("You can only set one calculation, but you have set two. value and maxValue.");
 					}
-					changes.Add(new Change(what, valueCalculation, maxValueCalculation));
+					float perTime = 1f;
+					if (changeXml.Check("per")) {
+						perTime = float.Parse(changeXml.Attributes["per"].Value);
+					}
+
+					changes.Add(new Change(what, valueCalculation, maxValueCalculation, perTime));
 				}
 			}
 		} catch (Exception e) {

@@ -3,7 +3,13 @@ using System.Collections.Generic;
 
 internal class Schedule {
 
+	public readonly Situation DefaultSituation;
+	private Situation ActualSituation;
 	private List<ScheduledSituation> situations = new List<ScheduledSituation>();
+
+	public Schedule(Situation defaultSituation) {
+		DefaultSituation = defaultSituation;
+	}
 
 	internal void AddSituation(float from, int duration, Situation situation, bool permament) {
 		ScheduledSituation ss = new ScheduledSituation(from, duration, situation, permament);
@@ -13,7 +19,6 @@ internal class Schedule {
 			}
 		}
 		situations.Add(ss);
-
 	}
 
 	private bool AreOverlapping(ScheduledSituation ssTmp, ScheduledSituation ss) {
