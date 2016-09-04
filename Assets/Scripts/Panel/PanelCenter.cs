@@ -1,16 +1,34 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 public class PanelCenter : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+	public Transform SchedulePeak;
+	public PanelSituation PanelSituation;
+
+	public Situation ActualSituation;
+	public Schedule Schedule;
+
+	internal void UpdateSchedule(Schedule schedule) {
+		Schedule = schedule;
+
+		int i = 0;
+		foreach(Transform scheduleHour in SchedulePeak) {
+			ScheduledSituation s = schedule.getSituationForHour(i);
+			scheduleHour.GetComponentInChildren<Text>().text = s!=null?s.Situation.Text:"";
+			i++;
+		}
+		
 	}
 
+	internal void HourHasChanged(int newHour) {
+		ScheduledSituation ss = Schedule.getSituationForHour(newHour);
+		Situation s = null;
+		if (ss == null) {
+			s = Schedule.DefaultSituation;
+		} else {
+			s = ss.Situation;
+		}
+		PanelSituation.HourHasChanged(newHour, s);
+	}
 }

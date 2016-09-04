@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
 using UnityEngine;
@@ -12,6 +13,11 @@ public class Game : MonoBehaviour {
 	public PanelCenter PanelCenter;
 
 	public float GameTime;
+	public int GameTimeNormalized {
+		get {
+			return (int)GameTime % 24;
+		}
+	}
 	public float ActualGameSpeed = 1f;
 
 	// Use this for initialization
@@ -42,7 +48,16 @@ public class Game : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		int gameTimeNormalized = GameTimeNormalized;
 		GameTime += Time.deltaTime / 60f * ActualGameSpeed;
+		int gameTimeNormalizedAfter = GameTimeNormalized;
+		if(gameTimeNormalizedAfter != gameTimeNormalized) {
+			HourHasChanged(gameTimeNormalizedAfter);
+		}
+	}
+
+	private void HourHasChanged(int hour) {
+		PanelCenter.HourHasChanged(hour);
 	}
 
 	public void Faster() {
@@ -56,6 +71,7 @@ public class Game : MonoBehaviour {
 
 	public void ChangeToPanelCenter() {
 		PanelCenter.gameObject.SetActive(true);
+		PanelCenter.UpdateSchedule(PanelSchedule.Schedule);
 		PanelSchedule.gameObject.SetActive(false);
 	}
 }
