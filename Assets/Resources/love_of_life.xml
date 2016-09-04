@@ -13,7 +13,7 @@
 		<param id="salary" text="wynagrodzenie" startValue="20"/>
 	</parameters>
 
-	<time>
+	<time normalSpeed="10" fasterSpeed="300">
 		<change what="walletStatus" per="720" value="-1 * rent" />
 		<change what="fridgeStatus" per="24" value="-4" />
 		<change what="freshness" per="0.5" value="-5"/>
@@ -258,8 +258,8 @@
 				canBeInterrupted="false"
 				maxTime="1"
 				>
-				<change what="=concetration" value="-0.1"/>
-				<change what="'freshness" value="-24"/>
+				<change what="concentration" value="-0.1"/>
+				<change what="freshness" value="-24"/>
 			</event>
 			<event
 				id="comfort"

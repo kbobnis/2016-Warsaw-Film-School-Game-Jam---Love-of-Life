@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-internal class Situation {
+public class Situation {
 	public readonly string Id;
 	public readonly string Text;
 	private List<Change> Changes;

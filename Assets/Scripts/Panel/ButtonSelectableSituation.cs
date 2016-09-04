@@ -5,9 +5,12 @@ using UnityEngine.UI;
 
 public class ButtonSelectableSituation : MonoBehaviour {
 
+	private Situation Situation;
+	private PanelSchedule PanelSchedule;
+
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
 	// Update is called once per frame
@@ -15,7 +18,13 @@ public class ButtonSelectableSituation : MonoBehaviour {
 	
 	}
 
-	internal void Init(Situation situation) {
+	internal void Init(Situation situation, PanelSchedule panelSchedule) {
+		Situation = situation;
+		PanelSchedule = panelSchedule;
 		GetComponentInChildren<Text>().text = situation.Text;
+	}
+
+	public void Selected() {
+		PanelSchedule.PropositionWasSelected(Situation);
 	}
 }
