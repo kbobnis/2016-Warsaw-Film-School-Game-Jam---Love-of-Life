@@ -29,7 +29,7 @@ public class CenterPanelParameters : MonoBehaviour {
 		int i = 0;
 		foreach(Parameter p in Parameters) {
 			GameObject parameterGO = transform.GetChild(i).gameObject;
-			parameterGO.GetComponentInChildren<Text>().text = p.Text + " " + p.ActualValue + (p.IsRising()?"UP":"");
+			parameterGO.GetComponentInChildren<Text>().text = p.Text + "\n " + p.ActualValue.ToString("0.0") + (p.IsRising()?" UP":"");
 			i++;
 		}
 	}
