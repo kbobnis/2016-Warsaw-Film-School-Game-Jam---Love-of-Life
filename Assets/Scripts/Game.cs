@@ -56,6 +56,7 @@ public class Game : MonoBehaviour {
 
 	public void ChangeToPanelCenter() {
 		PanelCenter.gameObject.SetActive(true);
+		PanelCenter.UpdateSchedule(PanelSchedule.Schedule);
 		PanelSchedule.gameObject.SetActive(false);
 	}
 }

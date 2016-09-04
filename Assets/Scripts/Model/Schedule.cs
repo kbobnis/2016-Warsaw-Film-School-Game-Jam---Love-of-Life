@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-internal class Schedule {
+public class Schedule {
 
 	public readonly Situation DefaultSituation;
 	private Situation ActualSituation;
@@ -23,11 +23,12 @@ internal class Schedule {
 
 	private bool AreOverlapping(ScheduledSituation ssTmp, ScheduledSituation ss) {
 		ScheduledSituation smaller = ssTmp.From < ss.From ? ssTmp : ss;
+		ScheduledSituation bigger = smaller == ssTmp ? ss : ssTmp;
 		float finish = smaller.From + smaller.Duration;
 		if (finish >= 24) {
 			finish -= 24;
 		}
-		return finish > ss.From;
+		return finish > bigger.From;
 	}
 
 	internal ScheduledSituation getSituationForHour(int hour) {
@@ -37,5 +38,9 @@ internal class Schedule {
 			}
 		}
 		return null;
+	}
+
+	internal void Update(int hour, Situation ss) {
+		AddSituation(hour, 1, ss, false);
 	}
 }

@@ -6,18 +6,11 @@ using System;
 
 public class PanelSchedule : MonoBehaviour {
 
-	// Use this for initialization
-	void Start() {
-
-	}
-
-	// Update is called once per frame
-	void Update() {
-
-	}
+	public Schedule Schedule;
 
 	internal void Init(Schedule schedule, List<Situation> situations, List<Parameter> parameters) {
 
+		Schedule = schedule;
 		//prepare parameters
 		Transform parametersTransform = transform.GetChild(0);
 		{
@@ -41,7 +34,7 @@ public class PanelSchedule : MonoBehaviour {
 				//add situations
 				ButtonSchedule buttonSchedule = hour.GetComponentInChildren<ButtonSchedule>();
 				ScheduledSituation s = schedule.getSituationForHour(i);
-				buttonSchedule.Init(s != null ? s.Situation : null, s != null ? s.Permament : false, this);
+				buttonSchedule.Init(s != null ? s.Situation : null, s != null ? s.Permament : false, this, i);
 				i++;
 			}
 		}
@@ -59,6 +52,10 @@ public class PanelSchedule : MonoBehaviour {
 		}
 
 		
+	}
+
+	internal void ScheduleUpdated(int myHour, Situation ss) {
+		Schedule.Update(myHour, ss);
 	}
 
 	internal void PropositionWasSelected(Situation situation) {

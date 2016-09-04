@@ -7,16 +7,8 @@ public class ButtonSchedule : MonoBehaviour {
 	private Situation ProposedSituation;
 	private PanelSchedule PanelSchedule;
 	private bool IsPermament;
-	
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+	private int MyHour;
 
 	private void RefreshMe() {
 		GetComponentInChildren<Text>().text = "";
@@ -28,7 +20,8 @@ public class ButtonSchedule : MonoBehaviour {
 		}
 	}
 
-	internal void Init(Situation s, bool isPermament, PanelSchedule panelSchedule) {
+	internal void Init(Situation s, bool isPermament, PanelSchedule panelSchedule, int myHour) {
+		MyHour = myHour;
 		ProposedSituation = null;
 		Ss = s;
 		IsPermament = isPermament;
@@ -51,6 +44,8 @@ public class ButtonSchedule : MonoBehaviour {
 		}
 		if (ProposedSituation != null && Ss == null) {
 			Ss = ProposedSituation;
+			Debug.Log("will update schedule.");
+			PanelSchedule.ScheduleUpdated(MyHour, Ss);
 		}
 		PanelSchedule.UnselectProposed();
 	}
