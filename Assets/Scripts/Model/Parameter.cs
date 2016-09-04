@@ -42,6 +42,9 @@ public class Parameter {
 			if (c.What == this) {
 				float deltaValue = c.ValueCalculation.Calculate(timeDelta);
 				ActualValue += deltaValue;
+				if (MaxValue != null && ActualValue > MaxValue.Value) {
+					ActualValue = MaxValue.Value;
+				}
 				if (ActualValue <= 0) {
 					Game.Me.EndGame(this);
 				}
