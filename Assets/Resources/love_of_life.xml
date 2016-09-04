@@ -43,8 +43,8 @@
 				id="planeParty"
 				text="Znajomi wpadli na Plane Party. Impreza była przednia!"
 				maxTime="2"
-				depleteText="zbarakło materiałów na zabawę. Imprezowicze rozeszli się do domów"
-				interruptText="Rozsiadłeś się w fotelu"
+				depleteText="zbarakło materiałów na zabawę. Imprezowicze rozeszli się do domów."
+				interruptText="Rozsiadłeś się w fotelu."
 				>
 				<change what="happiness" value="0.5"/>
 				<change what="happiness" maxValue="0.1"/>
@@ -132,9 +132,9 @@
 		</situation>
 
 		<situation id="buildingPlanes" text="Składanie samolotów">
-			<change what="planesCount" value="constructionSkills * 0.1 + 10"/>
+			<change what="planesCount" value="constructionSkills * 0.1 + 10 * concentration"/>
 			<change what="materialsCount" value="constuctionSkills * 0.1 + -10"/>
-			<change what="concentration" value="-0.2" />
+			<change what="concentration" value="-0.02" />
 			<change what="freshness" value="-0.1" />
 
 			<event
@@ -158,12 +158,22 @@
 				<change what="planesCount" value="10"/>
 				<change what="materialsCount" value="10"/>
 			</event>
+			<event 
+				id="event"
+				text="Czyżby zlot amatorów lotnictwa?"
+				interruptText="Ale nie taki, tylko papier się liczy!"
+				maxTime="2"
+				>
+				<change what="constructionSkills" value="1"/>
+			
+			</event>
 
 		</situation>
 
 		<situation id="throwingPlanes" text="Puszczanie samolotów">
 			<change what="happiness" value="constructionSkills * 0.1 + 10"/>
-			<change what="freshness" value="-0.1"/>
+			<change what="freshness" value="-12"/>
+			<change what="planesCount" value="-20"/>
 			<event
 				id="record"
 				text="Tak, tak, TAK! JEST REKORD!!"
@@ -172,6 +182,53 @@
 				>
 				<change what="happiness" value="10"/>
 				<change what="freshness" value="0.1"/>
+			</event>
+			<event
+				id="money"
+				text="A co to tam leży?"
+				interruptText="Nie, samoloty są najważniejsze."
+				maxTime="0.5"
+				>
+				<change what="walletStatus" value="10"/>
+				<change what="happiness" value="1"/>
+			</event>
+			<event
+				id="passion"
+				text="Dołączają do Ciebie kolejni oblatywacze. Puszczanie samolotów jest fajne!"
+				interruptText="Potrzeba więcej czasu na samoloty!"
+				maxTime="2"
+				>
+				<change what="happiness"  value="10"/>
+			<change what="freshness" value="12"/>
+			</event>
+			<event
+				id="raining"
+				text="O, w deszczu jeszcze nikt nie puszczał samolotów."
+				interruptText="Pora zbierać zabawki i iść do domu."
+				depleateText="Mokre, wszystkie przemoczone."
+				maxTime="2"
+				>
+				<change what="planesCount" value="-10"/>
+				<change what="freshness" value="12"/>
+			</event>
+			<event
+				id="windy"
+				text="Ale wieje, ciekawe czy dziś padnie rekord?"
+				interruptText="Ej, ale tej czapki to ja potrzebuję!"
+				depleatedText="Gdzie moje samoloty?"
+				maxTime="2"
+				>
+				<change what="happiness" value="5"/>
+				<change what="planesCount" value="-8"/>
+				<change what="freshness" value="-6"/>s
+			</event>
+			<event
+				id="authority"
+				text="&quot;Tutaj nie wolno śmiecić!&quot;"
+				interruptText="To nie są śmieci, to są samoloty!"
+				maxTime="1"
+				>
+				<change what="happiness" value="-10"/>
 			</event>
 		</situation>
 
