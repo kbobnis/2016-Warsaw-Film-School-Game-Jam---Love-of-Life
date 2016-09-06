@@ -8,12 +8,13 @@ public class Game : MonoBehaviour {
 
 	public static Game Me;
 	public Model Model;
+	public Schedule ScheduledSituations;
 
 	public PanelSchedule PanelSchedule;
 	public PanelCenter PanelCenter;
 
 	public float GameTime;
-	public Situation ActualSituation;
+	public ScheduledSituation ActualSituation;
 	public List<Parameter> Parameters;
 	public int GameTimeNormalized {
 		get {
@@ -38,15 +39,15 @@ public class Game : MonoBehaviour {
 
 		Parameters = XmlLoader.LoadParameters(model);
 		List<Situation> situations = XmlLoader.LoadSituations(model, Parameters);
-		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
+		ScheduledSituations = XmlLoader.LoadSchedule(model, situations);
 
 		TimeChanges timeChanges = XmlLoader.LoadTime(model, Parameters);
 		ActualGameSpeed = timeChanges.NormalSpeed;
-		ActualSituation = scheduledSituations.getSituationForHour(0, true).Situation;
+		ActualSituation = ScheduledSituations.getSituationForHour(0, true);
 
 		Model = new Model(timeChanges);
 
-		PanelSchedule.Init(scheduledSituations, situations, Parameters);
+		PanelSchedule.Init(ScheduledSituations, situations, Parameters);
 		PanelCenter.Init(PanelSchedule.Schedule, Parameters);
 		HourHasChanged(0);
 	}
@@ -60,16 +61,28 @@ public class Game : MonoBehaviour {
 		int gameTimeNormalized = GameTimeNormalized;
 		float timeDelta = Time.deltaTime / 60f * ActualGameSpeed;
 		UpdateParameters(timeDelta);
+		
 		GameTime += timeDelta;
 		int gameTimeNormalizedAfter = GameTimeNormalized;
 		if(gameTimeNormalizedAfter != gameTimeNormalized) {
 			HourHasChanged(gameTimeNormalizedAfter);
 		}
+
 	}
 
 	private void UpdateParameters(float timeDelta) {
+		//clear all parameter negative values
 		foreach(Parameter p in Parameters) {
-			p.UpdateValue(ActualSituation, timeDelta, Model.TimeChanges);
+			p.IsUsedAndIsZero = false;
+		}
+
+		foreach(Change change in ActualSituation.Situation.Changes) {
+			change.What.UpdateWithChange(change, timeDelta);
+		}
+
+		//Model.TimeChanges
+		foreach(Change change in Model.TimeChanges.Changes) {
+			change.What.UpdateWithChange(change, timeDelta);
 		}
 	}
 

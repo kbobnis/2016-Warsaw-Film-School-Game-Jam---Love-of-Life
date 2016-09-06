@@ -27,7 +27,7 @@ public class CenterPanelParameters : MonoBehaviour {
 	private void UpdateParameters() {
 		
 		int i = 0;
-		foreach(Parameter p in Parameters) {
+		foreach (Parameter p in Parameters) {
 			GameObject parameterGO = transform.GetChild(i).gameObject;
 
 			Transform valuePanel = parameterGO.transform.GetChild(1);
@@ -35,9 +35,10 @@ public class CenterPanelParameters : MonoBehaviour {
 			if (p.HasMaxValue()) {
 				valuePanel.GetChild(0).GetComponent<Image>().fillAmount = p.ActualValue / p.MaxValue.Value;
 			}
+			//change color if this is holding param back
+			parameterGO.GetComponent<Image>().color = p.IsUsedAndIsZero ? Color.red : Color.white;
 
 			valuePanel.GetChild(1).GetComponent<Text>().text = p.ActualValue.ToString("0.0");
-
 			parameterGO.GetComponentInChildren<Text>().text = p.Text;
 			i++;
 		}

@@ -38,9 +38,10 @@ public class Calculation {
 	}
 
 	internal float Calculate(float timeDelta) {
+
 		int i = 0; 
 		float res = Elements[i].GetValue();
-		while (i >= Elements.Count) {
+		while (i + 2 < Elements.Count) {
 			if ((Elements[i + 1] as ElementSign).SignType == ElementSign.SignTypeEnum.Add) {
 				res += Elements[i + 2].GetValue();
 			}
@@ -95,6 +96,10 @@ public class Calculation {
 		}
 
 		public override float GetValue() {
+			if (P.ActualValue <= 0) {
+				P.IsUsedAndIsZero = true;
+			}
+
 			return P.ActualValue;
 		}
 	}
@@ -108,7 +113,7 @@ public class Calculation {
 			float n;
 			bool isNumeric = float.TryParse(t, out n);
 			if (isNumeric) {
-				return new ElementNumber(n);
+				return new ElementNumber(float.Parse(t));
 			}
 
 			//check if element is a parameter

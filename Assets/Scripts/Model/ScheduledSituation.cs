@@ -1,4 +1,4 @@
-﻿internal class ScheduledSituation {
+﻿public class ScheduledSituation {
 	public readonly int Duration;
 	public readonly float From;
 	public readonly Situation Situation;

@@ -8,7 +8,7 @@ public class Parameter {
 	public readonly string Text;
 
 	private float ActualMaxValue;
-
+	public bool IsUsedAndIsZero;
 	public float ActualValue;
 	
 
@@ -31,16 +31,7 @@ public class Parameter {
 		return MaxValue != null;
 	}
 
-	internal void UpdateValue(Situation s, float timeDelta, TimeChanges timeChanges) {
-		
-		foreach(Change c in s.Changes) {
-			if (c.What == this) {
-				UpdateWithChange(c, timeDelta);
-			}
-		}
-	}
-
-	private void UpdateWithChange(Change c, float timeDelta) {
+	public void UpdateWithChange(Change c, float timeDelta) {
 		if (c.MaxValueCalculation != null) {
 			float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
 			MaxValue += deltaMaxValue;
@@ -52,8 +43,10 @@ public class Parameter {
 			ActualValue = MaxValue.Value;
 		}
 
-		if (ActualValue < 0) {
-			ActualValue = - 0.01f;
+
+		if (ActualValue < 0f) {
+			ActualValue = 0f;
 		}
 	}
+
 }
