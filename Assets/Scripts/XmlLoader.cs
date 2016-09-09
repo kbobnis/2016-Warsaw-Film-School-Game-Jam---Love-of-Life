@@ -8,8 +8,9 @@ internal class XmlLoader {
 	internal static List<Parameter> LoadParameters(XmlDocument model) {
 
 		List<Parameter> parameters = new List<Parameter>();
-		XmlNodeList parametersXml = model.GetElementsByTagName("parameters")[0].ChildNodes;
-		foreach (XmlNode parameterXml in parametersXml) {
+		XmlNode parametersXml = model.GetElementsByTagName("parameters")[0];
+		float dragDownIfZeroPenalty = float.Parse( parametersXml.Attributes["dragDownIfZeroPenalty"].Value );
+		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
 			string id = parameterXml.Attributes["id"].Value;
 			float? maxValue = parameterXml.Check("maxValue") ? float.Parse(parameterXml.Attributes["maxValue"].Value) : default(float?);
 			float startValue = parameterXml.Check("startValue") ? float.Parse(parameterXml.Attributes["startValue"].Value) : 0;
@@ -18,7 +19,7 @@ internal class XmlLoader {
 				throw new Exception("There is no text in parameter " + id);
 			}
 			string text = parameterXml.Attributes["text"].Value;
-			parameters.Add(new Parameter(id, maxValue, startValue, text, zeroEndsGame));
+			parameters.Add(new Parameter(id, maxValue, startValue, text, zeroEndsGame, dragDownIfZeroPenalty));
 		}
 
 		//drag down if zero loading

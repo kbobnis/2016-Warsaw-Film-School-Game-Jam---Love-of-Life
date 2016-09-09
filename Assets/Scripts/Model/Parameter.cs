@@ -10,11 +10,15 @@ public class Parameter {
 	public readonly bool ZeroEndsGame;
 
 	private float ActualMaxValue;
-	public bool IsUsedAndIsZero;
 	public float ActualValue;
 	public List<Parameter> DragDownIfZero;
 
-	public Parameter(string id, float? maxValue, float startValue, string text, bool zeroEndsGame) {
+	public bool IsDraggingDown;
+	public bool IsUsedAndIsZero;
+	public List<Parameter> IsDraggedDownBy = new List<Parameter>();
+	private readonly float DragDownIfZeroPenalty;
+
+	public Parameter(string id, float? maxValue, float startValue, string text, bool zeroEndsGame, float dragDownIfZeroPenalty) {
 		Id = id;
 		MaxValue = maxValue;
 		StartValue = startValue;
@@ -24,6 +28,7 @@ public class Parameter {
 			ActualMaxValue = MaxValue.Value;
 		}
 		ZeroEndsGame = zeroEndsGame;
+		DragDownIfZeroPenalty = dragDownIfZeroPenalty;
 	}
 
 	public override string ToString() {
@@ -46,12 +51,29 @@ public class Parameter {
 			ActualValue = MaxValue.Value;
 		}
 
+		ActualizeValue();
+	}
+
+	public void ActualizeValue() {
 		if (ActualValue < 0f) {
 			if (ZeroEndsGame) {
 				throw new Exception("End game.");
 			}
+			if (DragDownIfZero != null) {
+				float howMuch = -ActualValue / DragDownIfZero.Count;
+				IsDraggingDown = true;
+				foreach (Parameter p in DragDownIfZero) {
+					p.DropValue(howMuch, this);
+				}
+			}
 			ActualValue = 0f;
 		}
+	}
+
+	private void DropValue(float howMuch, Parameter parameter) {
+		ActualValue -= howMuch * parameter.DragDownIfZeroPenalty;
+		IsDraggedDownBy.Add(parameter);
+		ActualizeValue();
 	}
 
 	internal void AddDragDownIfZero(List<Parameter> dragDownIfZero) {

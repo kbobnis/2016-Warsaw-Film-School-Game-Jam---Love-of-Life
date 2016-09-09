@@ -74,6 +74,8 @@ public class Game : MonoBehaviour {
 		//clear all parameter negative values
 		foreach(Parameter p in Parameters) {
 			p.IsUsedAndIsZero = false;
+			p.IsDraggedDownBy.Clear();
+			p.IsDraggingDown = false;
 		}
 
 		foreach(Change change in ActualSituation.Situation.Changes) {
@@ -84,6 +86,7 @@ public class Game : MonoBehaviour {
 		foreach(Change change in Model.TimeChanges.Changes) {
 			change.What.UpdateWithChange(change, timeDelta);
 		}
+
 	}
 
 	private void HourHasChanged(int hour) {
