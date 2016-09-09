@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public class Parameter {
 	
@@ -6,13 +7,14 @@ public class Parameter {
 	public float? MaxValue;
 	private float StartValue;
 	public readonly string Text;
+	public readonly bool ZeroEndsGame;
 
 	private float ActualMaxValue;
 	public bool IsUsedAndIsZero;
 	public float ActualValue;
-	
+	public List<Parameter> DragDownIfZero;
 
-	public Parameter(string id, float? maxValue, float startValue, string text) {
+	public Parameter(string id, float? maxValue, float startValue, string text, bool zeroEndsGame) {
 		Id = id;
 		MaxValue = maxValue;
 		StartValue = startValue;
@@ -21,6 +23,7 @@ public class Parameter {
 		if (MaxValue != null) {
 			ActualMaxValue = MaxValue.Value;
 		}
+		ZeroEndsGame = zeroEndsGame;
 	}
 
 	public override string ToString() {
@@ -43,10 +46,15 @@ public class Parameter {
 			ActualValue = MaxValue.Value;
 		}
 
-
 		if (ActualValue < 0f) {
+			if (ZeroEndsGame) {
+				throw new Exception("End game.");
+			}
 			ActualValue = 0f;
 		}
 	}
 
+	internal void AddDragDownIfZero(List<Parameter> dragDownIfZero) {
+		DragDownIfZero = dragDownIfZero;
+	}
 }

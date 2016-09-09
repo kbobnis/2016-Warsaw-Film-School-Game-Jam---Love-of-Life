@@ -13,11 +13,35 @@ internal class XmlLoader {
 			string id = parameterXml.Attributes["id"].Value;
 			float? maxValue = parameterXml.Check("maxValue") ? float.Parse(parameterXml.Attributes["maxValue"].Value) : default(float?);
 			float startValue = parameterXml.Check("startValue") ? float.Parse(parameterXml.Attributes["startValue"].Value) : 0;
+			bool zeroEndsGame = parameterXml.Check("zeroEndsGame") ? parameterXml.Attributes["zeroEndsGame"].Value == "true" : false;
 			if (!parameterXml.Check("text")) {
 				throw new Exception("There is no text in parameter " + id);
 			}
 			string text = parameterXml.Attributes["text"].Value;
-			parameters.Add(new Parameter(id, maxValue, startValue, text));
+			parameters.Add(new Parameter(id, maxValue, startValue, text, zeroEndsGame));
+		}
+
+		//drag down if zero loading
+		foreach(XmlNode parameterXml in parametersXml) {
+			Parameter actualParam = parameters.FirstOrDefault(t => t.Id == parameterXml.Attributes["id"].Value);
+			List<Parameter> dragDownIfZero = new List<Parameter>();
+			if (parameterXml.Check("dragDownIfZero")) {
+				string[] parameterIds = parameterXml.Attributes["dragDownIfZero"].Value.Split(',');
+
+				foreach (string pTmp in parameterIds) {
+					bool found = false;
+					foreach (Parameter p in parameters) {
+						if (p.Id == pTmp) {
+							dragDownIfZero.Add(p);
+							found = true;
+						}
+					}
+					if (!found) {
+						throw new Exception("DragDownIfZero has parameter (" + pTmp + ") but there is no such parameter.");
+					}
+				}
+			}
+			actualParam.AddDragDownIfZero(dragDownIfZero);
 		}
 		return parameters;
 	}
