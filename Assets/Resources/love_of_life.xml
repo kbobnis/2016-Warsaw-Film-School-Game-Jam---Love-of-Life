@@ -9,12 +9,12 @@
 		<param id="constructionSkills" text="technika składania" startValue="0.1" maxValue="1" />
 		<param id="businessCompetence" text="kompetencje biznesowe" startValue="0.1" maxValue="1"/>
 		<param id="happiness" text="szczęście" startValue="0.5" maxValue="1" zeroEndsGame="true"/>
-		<param id="salary" text="wynagrodzenie" startValue="0.25" maxValue="1" />
+		<param id="salary" text="wynagrodzenie" startValue="0.4" maxValue="1" />
 	</parameters>
 
 	<time normalSpeed="10" fasterSpeed="300">
 		<change what="walletStatus" value="-0.01 * rent" />
-		<change what="fridgeStatus" value="-0.03" />
+		<change what="fridgeStatus" value="-0.02" />
 	</time>
 
 	<schedule default="house">
@@ -33,7 +33,7 @@
 		<!-- wasting time -->
 		<situation id="house" text="Marnowanie czasu">
 			<change what="concentration" value="-0.01" />
-			<change what="happiness" value="0.01 * concentration" />
+			<change what="happiness" value="0.005 * concentration" />
 			<change what="fridgeStatus" value="-0.005" />
 		</situation>
 
@@ -43,7 +43,7 @@
 
 		<situation id="shopping" text="Zakupy">
 			<change what="walletStatus" value="-0.1" />
-			<change what="fridgeStatus" value="0.6"/>
+			<change what="fridgeStatus" value="0.5"/>
 			<change what="materialsCount" value="0.1"/>
 			<change what="concentration" value="-0.02" />
 
