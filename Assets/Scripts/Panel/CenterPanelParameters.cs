@@ -33,7 +33,7 @@ public class CenterPanelParameters : MonoBehaviour {
 			Transform valuePanel = parameterGO.transform.GetChild(1);
 			valuePanel.GetChild(0).gameObject.SetActive(p.HasMaxValue());
 			if (p.HasMaxValue()) {
-				valuePanel.GetChild(0).GetComponent<Image>().fillAmount = p.ActualValue / p.MaxValue.Value;
+				valuePanel.GetChild(0).GetComponent<Image>().fillAmount = p.ActualValue / (p.MaxValue.Calculate() * p.ActualMaxValueMultiplier);
 			}
 			//change color if this is holding param back
 			//change color if this is dragging others down
@@ -42,7 +42,7 @@ public class CenterPanelParameters : MonoBehaviour {
 			//show arrow down if is lowered by a parameter
 			parameterGO.transform.GetChild(0).GetChild(1).GetComponent<Image>().enabled = p.IsDraggedDownBy.Count > 0;
 
-			valuePanel.GetChild(1).GetComponent<Text>().text = (p.ActualValue * 100).ToString(".0");
+			valuePanel.GetChild(1).GetComponent<Text>().text = (p.ActualValue ).ToString("0.00") + " / " + (p.MaxValue.Calculate() * p.ActualMaxValueMultiplier).ToString("0.00");
 			parameterGO.GetComponentInChildren<Text>().text = p.Text;
 			i++;
 		}

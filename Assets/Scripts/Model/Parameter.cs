@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Parameter {
 	
 	public readonly string Id;
-	public float? MaxValue;
 	private float StartValue;
 	public readonly string Text;
 	public readonly bool ZeroEndsGame;
 
-	private float ActualMaxValue;
+	public Calculation MaxValue;
+	public float ActualMaxValueMultiplier { get; private set; }
+
 	public float ActualValue;
 	public List<Parameter> DragDownIfZero;
 
@@ -18,21 +20,18 @@ public class Parameter {
 	public List<Parameter> IsDraggedDownBy = new List<Parameter>();
 	private readonly float DragDownIfZeroPenalty;
 
-	public Parameter(string id, float? maxValue, float startValue, string text, bool zeroEndsGame, float dragDownIfZeroPenalty) {
+	public Parameter(string id, float startValue, string text, bool zeroEndsGame, float dragDownIfZeroPenalty) {
 		Id = id;
-		MaxValue = maxValue;
 		StartValue = startValue;
 		Text = text;
 		ActualValue = startValue;
-		if (MaxValue != null) {
-			ActualMaxValue = MaxValue.Value;
-		}
+		ActualMaxValueMultiplier = 1;
 		ZeroEndsGame = zeroEndsGame;
 		DragDownIfZeroPenalty = dragDownIfZeroPenalty;
 	}
 
 	public override string ToString() {
-		return Id + " " + ActualValue + "/" + MaxValue + ", startValue: " + StartValue;
+		return Id + " " + ActualValue + "/" + (MaxValue.Calculate() * ActualMaxValueMultiplier) + ", startValue: " + StartValue;
 	}
 
 	internal bool HasMaxValue() {
@@ -42,23 +41,27 @@ public class Parameter {
 	public void UpdateWithChange(Change c, float timeDelta) {
 		if (c.MaxValueCalculation != null) {
 			float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
-			MaxValue += deltaMaxValue;
+			ActualMaxValueMultiplier += deltaMaxValue;
 		}
 
-		float deltaValue = c.ValueCalculation.Calculate(timeDelta);
-		ActualValue += deltaValue;
-		if (MaxValue != null && ActualValue > MaxValue.Value) {
-			ActualValue = MaxValue.Value;
+		if (c.ValueCalculation != null) {
+			float deltaValue = c.ValueCalculation.Calculate(timeDelta);
+			ActualValue += deltaValue;
 		}
 
-		ActualizeValue();
+		if (MaxValue != null && ActualValue > MaxValue.Calculate() * ActualMaxValueMultiplier) {
+			ActualValue = MaxValue.Calculate() * ActualMaxValueMultiplier;
+		}
+
+		DragDown();
 	}
 
-	public void ActualizeValue() {
+	public void DragDown() {
+		if (ActualValue < 0f && ZeroEndsGame) {
+			throw new Exception("End game.");
+		}
+
 		if (ActualValue < 0f) {
-			if (ZeroEndsGame) {
-				throw new Exception("End game.");
-			}
 			if (DragDownIfZero != null) {
 				float howMuch = -ActualValue / DragDownIfZero.Count;
 				IsDraggingDown = true;
@@ -73,10 +76,12 @@ public class Parameter {
 	private void DropValue(float howMuch, Parameter parameter) {
 		ActualValue -= howMuch * parameter.DragDownIfZeroPenalty;
 		IsDraggedDownBy.Add(parameter);
-		ActualizeValue();
+		DragDown();
 	}
 
-	internal void AddDragDownIfZero(List<Parameter> dragDownIfZero) {
+	internal void AddDragIfZeroAndMaxValue(List<Parameter> dragDownIfZero, Calculation maxValue) {
 		DragDownIfZero = dragDownIfZero;
+		MaxValue = maxValue;
 	}
+
 }

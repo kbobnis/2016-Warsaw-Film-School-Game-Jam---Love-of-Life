@@ -4,11 +4,9 @@ using System.Linq;
 
 public class Calculation {
 	private string Value;
-	private List<Parameter> Parameters;
 	private List<Element> Elements;
 
 	public Calculation(string value, List<Parameter> parameters) {
-		Parameters = parameters;
 		Value = value;
 
 		try {
@@ -37,7 +35,7 @@ public class Calculation {
 		}
 	}
 
-	internal float Calculate(float timeDelta) {
+	internal float Calculate(float? timeDelta=null) {
 
 		int i = 0; 
 		float res = Elements[i].GetValue();
@@ -51,7 +49,7 @@ public class Calculation {
 			i += 2;
 		}
 		//add pairs
-		return res * timeDelta;
+		return res * (timeDelta!=null?timeDelta.Value:1);
 	}
 
 	class ElementNumber : Element {

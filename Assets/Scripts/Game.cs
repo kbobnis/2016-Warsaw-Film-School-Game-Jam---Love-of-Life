@@ -26,8 +26,9 @@ public class Game : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		Me = this;
-		PanelCenter.gameObject.SetActive(false);
-		PanelSchedule.gameObject.SetActive(true);
+		PanelCenter.gameObject.SetActive(true);
+		
+		PanelSchedule.gameObject.SetActive(false);
 
 		XmlDocument model = new XmlDocument();
 		string modelDir = "love_of_life";
@@ -50,6 +51,7 @@ public class Game : MonoBehaviour {
 		PanelSchedule.Init(ScheduledSituations, situations, Parameters);
 		PanelCenter.Init(PanelSchedule.Schedule, Parameters);
 		HourHasChanged(0);
+		ChangeToPanelCenter();
 	}
 
 	internal void EndGame(Parameter parameter) {
@@ -78,11 +80,12 @@ public class Game : MonoBehaviour {
 			p.IsDraggingDown = false;
 		}
 
+		//actual situation changes
 		foreach(Change change in ActualSituation.Situation.Changes) {
 			change.What.UpdateWithChange(change, timeDelta);
 		}
 
-		//Model.TimeChanges
+		//all time changes
 		foreach(Change change in Model.TimeChanges.Changes) {
 			change.What.UpdateWithChange(change, timeDelta);
 		}

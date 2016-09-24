@@ -7,29 +7,43 @@ internal class XmlLoader {
 
 	internal static List<Parameter> LoadParameters(XmlDocument model) {
 
-		List<Parameter> parameters = new List<Parameter>();
 		XmlNode parametersXml = model.GetElementsByTagName("parameters")[0];
+
+		//loading parameter ids
+		List<string> parameterIds = new List<string>();
 		float dragDownIfZeroPenalty = float.Parse( parametersXml.Attributes["dragDownIfZeroPenalty"].Value );
 		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
 			string id = parameterXml.Attributes["id"].Value;
-			float? maxValue = parameterXml.Check("maxValue") ? float.Parse(parameterXml.Attributes["maxValue"].Value) : default(float?);
+			parameterIds.Add(id);
+		}
+
+		List<Parameter> parameters = new List<Parameter>();
+		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
+			string id = parameterXml.Attributes["id"].Value;
+
+			if (!parameterXml.Check("maxValue")) {
+				throw new Exception("You have to pass max value to parameter: " + id);
+			}
+			//Calculation maxValue = Calculation.from parameterXml.Attributes["maxValue"].Value
 			float startValue = parameterXml.Check("startValue") ? float.Parse(parameterXml.Attributes["startValue"].Value) : 0;
 			bool zeroEndsGame = parameterXml.Check("zeroEndsGame") ? parameterXml.Attributes["zeroEndsGame"].Value == "true" : false;
 			if (!parameterXml.Check("text")) {
 				throw new Exception("There is no text in parameter " + id);
 			}
 			string text = parameterXml.Attributes["text"].Value;
-			parameters.Add(new Parameter(id, maxValue, startValue, text, zeroEndsGame, dragDownIfZeroPenalty));
+			
+			parameters.Add(new Parameter(id, startValue, text, zeroEndsGame, dragDownIfZeroPenalty));
 		}
 
-		//drag down if zero loading
-		foreach(XmlNode parameterXml in parametersXml) {
-			Parameter actualParam = parameters.FirstOrDefault(t => t.Id == parameterXml.Attributes["id"].Value);
+		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
+			string id = parameterXml.Attributes["id"].Value;
+			Calculation maxValue = new Calculation(parameterXml.Attributes["maxValue"].Value, parameters);
+
 			List<Parameter> dragDownIfZero = new List<Parameter>();
 			if (parameterXml.Check("dragDownIfZero")) {
-				string[] parameterIds = parameterXml.Attributes["dragDownIfZero"].Value.Split(',');
+				string[] thisParameterIds = parameterXml.Attributes["dragDownIfZero"].Value.Split(',');
 
-				foreach (string pTmp in parameterIds) {
+				foreach (string pTmp in thisParameterIds) {
 					bool found = false;
 					foreach (Parameter p in parameters) {
 						if (p.Id == pTmp) {
@@ -42,9 +56,9 @@ internal class XmlLoader {
 					}
 				}
 			}
-			actualParam.AddDragDownIfZero(dragDownIfZero);
+			parameters.Find(t => t.Id == id).AddDragIfZeroAndMaxValue(dragDownIfZero, maxValue);
 		}
-		return parameters;
+			return parameters;
 	}
 
 	internal static Schedule LoadSchedule(XmlDocument model, List<Situation> situations) {

@@ -9,5 +9,10 @@
 		What = what;
 		ValueCalculation = valueCalculation;
 		PerTime = perTime;
+		MaxValueCalculation = maxValueCalculation;
+	}
+
+	public override string ToString() {
+		return "change: " + What.Id + ", value: " + ValueCalculation + ", max value: " + MaxValueCalculation;
 	}
 }
