@@ -13,6 +13,14 @@
 	}
 
 	public override string ToString() {
-		return "change: " + What.Id + ", value: " + ValueCalculation + ", max value: " + MaxValueCalculation;
+		string valueCalc = ", value: " + ValueCalculation;
+		string maxValueCalc = ", max value: " + MaxValueCalculation;
+		return "change: " + What.Id + (ValueCalculation!=null?valueCalc:"") + (MaxValueCalculation!=null?maxValueCalc:"") ;
+	}
+
+	public string ToHumanString() {
+		string valueCalc = "" + ValueCalculation;
+		string maxValueCalc = " maks: " + MaxValueCalculation;
+		return (ValueCalculation != null ? valueCalc : "") + (MaxValueCalculation != null ? maxValueCalc : "") + " = " + What.Text;
 	}
 }

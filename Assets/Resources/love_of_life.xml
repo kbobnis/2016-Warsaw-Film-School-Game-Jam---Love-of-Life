@@ -1,23 +1,15 @@
 <root>
 	<parameters dragDownIfZeroPenalty="2">
-		<param id="planesCount" text="Liczba samolotów" startValue="0" maxValue="1"/>
-		<param id="materialsCount" text="liczba materiałów" startValue="0" maxValue="1"/>
-		<param id="walletStatus" text="zasobność portfela" startValue="0.5" maxValue="1" dragDownIfZero="planesCount,materialsCount,fridgeStatus,happiness" />
-		<param id="fridgeStatus" text="zapełnienie lodówki" startValue="0.8" maxValue="1" dragDownIfZero="concentration,happiness,walletStatus"/>
-		<param id="concentration" text="koncetracja" startValue="1" maxValue="condition" dragDownIfZero="businessCompetence,constructionSkills,happiness"/>
+		<param id="walletStatus" text="zasobność portfela" startValue="0.5" maxValue="1" dragDownIfZero="fridgeStatus,happiness" />
+		<param id="fridgeStatus" text="zapełnienie lodówki" startValue="0.8" maxValue="1" dragDownIfZero="concentration,happiness"/>
+		<param id="concentration" text="koncetracja" startValue="0.7" maxValue="condition" dragDownIfZero="businessCompetence,happiness"/>
 		<param id="condition" text="kondycja" startValue="1" maxValue="1" dragDownIfZero="concentration,happiness"/>
-		<param id="houseStandard" text="Standard mieszkania" startValue="0.05" maxValue="1"/>
-		<param id="constructionSkills" text="technika składania" startValue="0.1" maxValue="1" />
-		<param id="businessCompetence" text="kompetencje biznesowe" startValue="0.1" maxValue="1"/>
+		<param id="houseClean" text="Porządek w mieszkaniu" startValue="1" maxValue="1" dragDownIfZero="happiness"/>
+		<param id="businessCompetence" text="kompetencje biznesowe" startValue="0.1" maxValue="1" dragDownIfZero="walletStatus"/>
 		<param id="happiness" text="szczęście" startValue="0.5" maxValue="1" zeroEndsGame="true"/>
 		<param id="salary" text="wynagrodzenie" startValue="0.4" maxValue="1" />
+		<param id="cleaningService" text="Murzyn do sprzątania" startValue="0.0" maxValue="1" />
 	</parameters>
-
-	<time normalSpeed="10" fasterSpeed="300">
-		<change what="walletStatus" value="-0.01 * houseStandard" />
-		<change what="fridgeStatus" value="-0.015" />
-		<change what="condition" value="-0.002"/>
-	</time>
 
 	<schedule default="house">
 		<scheduledSituation from="0" duration="7" id="sleep" isPermament="false"/>
@@ -27,51 +19,46 @@
 		<scheduledSituation from="13" duration="4" id="work" isPermament="true"/>
 		<scheduledSituation from="17" duration="2" id="sleep" isPermament="false"/>
 		<scheduledSituation from="19" duration="1" id="sport" isPermament="false"/>
+		<scheduledSituation from="20" duration="1" id="clean" isPermament="false"/>
 	</schedule>
-
+	
 	<events chance="0.1" />
+	
+	<!-- functions maxValue- and getOne- -->
+	<time normalSpeed="10" fasterSpeed="300">
+		<change what="walletStatus" value="-0.01 * maxValue-houseClean" />
+		<change what="fridgeStatus" value="-0.015 * condition + -0.02" />
+		<change what="condition" value="-0.01"/>
+		<change what="houseClean" value="-0.03" />
+		<change what="houseClean" value="0.04 * cleaningService" />
+	</time>
 
 	<situations>
-		<!-- wasting time -->
 		<situation id="house" text="Marnowanie czasu">
 			<change what="concentration" value="-0.01" />
-			<change what="happiness" value="0.005 * concentration * houseStandard" />
+			<change what="happiness" value="0.05 * concentration * houseClean * getOne-fridgeStatus" />
 			<change what="fridgeStatus" value="-0.005" />
 		</situation>
 
-		<situation id="sport" text="sport">
-			<change what="condition" value="0.1" />
-			<change what="condition" maxValue="0.05" />
+		<situation id="sport" text="Sport">
+			<change what="condition" value="-0.1" />
+			<change what="condition" maxValue="0.05 * getOne-condition" />
 			<change what="fridgeStatus" value="-0.02"/>
-			<change what="happiness" value="0.005"/>
+			<change what="happiness" value="0.005 * getOne-condition"/>
 		</situation>
 
 		<situation id="sleep" text="Sen">
 			<change what="concentration" value="0.2 * condition" />
+			<change what="condition" value="0.05" />
+		</situation>
+		
+		<situation id="clean" text="Sprzątanie" >
+			<change what="houseClean" value="1" />
 		</situation>
 
 		<situation id="shopping" text="Zakupy">
 			<change what="walletStatus" value="-0.1" />
-			<change what="fridgeStatus" value="0.5"/>
-			<change what="materialsCount" value="0.1"/>
-			<change what="concentration" value="-0.02" />
-
-		</situation>
-
-		<situation id="buildingPlanes" text="Składanie samolotów">
-			<change what="planesCount" value="constructionSkills * concentration"/>
-			<change what="materialsCount" value="-1 * constructionSkills * 0.1"/>
-			<change what="concentration" value="-0.08" />
-		</situation>
-
-		<situation id="throwingPlanes" text="Puszczanie samolotów">
-			<change what="happiness" value="concentration * constructionSkills"/>
-			<change what="planesCount" value="-0.01"/>
-
-		</situation>
-
-		<situation id="upgradeBuildingsSkills" text="Ulepszanie techniki">
-			<change what="constructionSkills" value="0.02"/>
+			<change what="fridgeStatus" value="0.5 * getOne-walletStatus"/>
 			<change what="concentration" value="-0.02" />
 		</situation>
 
@@ -86,7 +73,19 @@
 		</situation>
 
 		<situation id="brake" text="Przerwa" selectable="false">
+			<change what="happiness" value="0.05 * getOne-condition "/>
 		</situation>
 
 	</situations>
-</root>
+
+	<plot>
+		<plotElement text="Jestem bardzo zmęczony. Muszę coś zrobić ze swoim życiem.">
+			<reach paramId="concentration" value="1" />
+			<enables situationId="shopping" />
+		</plotElement>
+		<plotElement text="Chętnie za coś się zabiorę, trzeba kupić materiały.">
+			<reach paramId="materialsCount" value="0.5" />
+		</plotElement>
+	</plot>
+	
+	</root>

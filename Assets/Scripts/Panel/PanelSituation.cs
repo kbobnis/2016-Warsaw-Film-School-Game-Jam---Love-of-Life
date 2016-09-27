@@ -1,18 +1,8 @@
-﻿using System;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PanelSituation : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	internal void UpdateActiveSituation(Situation actualSituation) {
 		GetComponentsInChildren<Text>()[0].text = "W tej chwili: \n\n" + actualSituation.Text;
