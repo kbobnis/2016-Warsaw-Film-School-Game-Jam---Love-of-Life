@@ -38,7 +38,15 @@ public class Parameter {
 		return MaxValue != null;
 	}
 
-	public void UpdateWithChange(Change c, float timeDelta) {
+	internal bool CanUpdateWithoutOverflow(Change c, float? timeDelta = null) {
+		bool canIt = true;
+		if (c.ValueCalculation != null) {
+			canIt = ActualValue >= c.ValueCalculation.Calculate(timeDelta);
+		}
+		return canIt;
+	}
+
+	public void UpdateWithChange(Change c, float? timeDelta = null) {
 		if (c.MaxValueCalculation != null) {
 			float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
 			ActualMaxValueMultiplier += deltaMaxValue;
