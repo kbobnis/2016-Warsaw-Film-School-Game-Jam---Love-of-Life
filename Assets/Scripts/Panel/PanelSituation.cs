@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class PanelSituation : MonoBehaviour {
 
 	private Situation Situation;
-	private List<Parameter> Parameters;
+	private GameState GameState;
 
-	internal void UpdateActiveSituation(Situation actualSituation, List<Parameter> parameters) {
-		GetComponentsInChildren<Text>()[0].text = "W tej chwili: \n\n" + actualSituation.Text;
-		Game.Me.ActualSituation = new ScheduledSituation(Game.Me.GameTimeNormalized, 1, actualSituation, false);
+	internal void UpdateActiveSituation(Situation actualSituation, GameState gameState) {
+		GetComponentsInChildren<Text>()[0].text = "Dzień " + (gameState.DayNumber + 1) + ", godzina " + gameState.HourOfDay;
+		GetComponentsInChildren<Text>()[1].text = "W tej chwili: \n\n" + actualSituation.Text;
 
 		//show buttons on second panel
-		Transform panelButtons = transform.GetChild(1);
+		Transform panelButtons = transform.GetChild(2);
 		int i = 0;
 		foreach (Transform button in panelButtons) {
 			button.gameObject.SetActive(i < actualSituation.Buttons.Count);
@@ -26,7 +26,7 @@ public class PanelSituation : MonoBehaviour {
 						c.UpdateParams();
 					}
 
-					foreach(Parameter p in parameters) {
+					foreach(Parameter p in gameState.Parameters) {
 						p.UpdateValuesFromPreviousLoop();
 					}
 				});
@@ -41,13 +41,13 @@ public class PanelSituation : MonoBehaviour {
 
 	void Update() {
 		if (Situation != null) {
-			UpdateActiveSituation(Situation, Parameters);
+			UpdateActiveSituation(Situation, GameState);
 		}
 	}
 
-	internal void HourHasChanged(int newHour, Situation ss, List<Parameter> parameters) {
+	internal void HourHasChanged(int newHour, Situation ss, GameState gameState) {
 		Situation = ss;
-		Parameters = parameters;
-		UpdateActiveSituation(ss, parameters);
+		GameState = gameState;
+		UpdateActiveSituation(ss, gameState);
 	}
 }

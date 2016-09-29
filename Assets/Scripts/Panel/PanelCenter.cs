@@ -23,7 +23,7 @@ public class PanelCenter : MonoBehaviour {
 		
 	}
 
-	internal void HourHasChanged(int newHour, List<Parameter> parameters) {
+	internal void HourHasChanged(int newHour, GameState gameState) {
 		ScheduledSituation ss = Schedule.getSituationForHour(newHour);
 		Situation s = null;
 		if (ss == null) {
@@ -31,7 +31,8 @@ public class PanelCenter : MonoBehaviour {
 		} else {
 			s = ss.Situation;
 		}
-		PanelSituation.HourHasChanged(newHour, s, parameters);
+		gameState.ActualSituation = new ScheduledSituation(gameState.HourOfDay, 1, s, false);
+		PanelSituation.HourHasChanged(newHour, s, gameState);
 	}
 
 	internal void Init(Schedule schedule, List<Parameter> parameters) {

@@ -7,21 +7,11 @@ using UnityEngine;
 public class Game : MonoBehaviour {
 
 	public static Game Me;
-	public Model Model;
-	public Schedule ScheduledSituations;
 
 	public PanelSchedule PanelSchedule;
 	public PanelCenter PanelCenter;
 
-	public float GameTime;
-	public ScheduledSituation ActualSituation;
-	public List<Parameter> Parameters;
-	public int GameTimeNormalized {
-		get {
-			return (int)GameTime % 24;
-		}
-	}
-	public float ActualGameSpeed = 1f;
+	public GameState GameState;
 
 	// Use this for initialization
 	void Awake () {
@@ -38,18 +28,15 @@ public class Game : MonoBehaviour {
 		string pattern = "(<!--.*?--\\>)";
 		model.InnerXml = Regex.Replace(model.InnerXml, pattern, string.Empty, RegexOptions.Singleline);
 
-		Parameters = XmlLoader.LoadParameters(model);
-		List<Situation> situations = XmlLoader.LoadSituations(model, Parameters);
-		ScheduledSituations = XmlLoader.LoadSchedule(model, situations);
+		List<Parameter> parameters = XmlLoader.LoadParameters(model);
+		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
+		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
 
-		TimeChanges timeChanges = XmlLoader.LoadTime(model, Parameters);
-		ActualGameSpeed = timeChanges.NormalSpeed;
-		ActualSituation = ScheduledSituations.getSituationForHour(0, true);
+		GameState = new GameState(parameters, scheduledSituations, new Model(XmlLoader.LoadTime(model, parameters)));
 
-		Model = new Model(timeChanges);
-
-		PanelSchedule.Init(ScheduledSituations, situations, Parameters);
-		PanelCenter.Init(PanelSchedule.Schedule, Parameters);
+		PanelSchedule.Init(scheduledSituations, situations, parameters);
+		PanelCenter.Init(PanelSchedule.Schedule, parameters);
+		
 		HourHasChanged(0);
 		ChangeToPanelCenter();
 	}
@@ -60,49 +47,20 @@ public class Game : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		int gameTimeNormalized = GameTimeNormalized;
-		float timeDelta = Time.deltaTime / 60f * ActualGameSpeed;
-		UpdateParameters(timeDelta);
+		int gameTimeNormalized = GameState.HourOfDay;
+		float timeDelta = Time.deltaTime / 60f * GameState.ActualGameSpeed;
+		GameState.UpdateParameters(timeDelta);
 		
-		GameTime += timeDelta;
-		int gameTimeNormalizedAfter = GameTimeNormalized;
+		GameState.GameTime += timeDelta;
+		int gameTimeNormalizedAfter = GameState.HourOfDay;
 		if(gameTimeNormalizedAfter != gameTimeNormalized) {
 			HourHasChanged(gameTimeNormalizedAfter);
 		}
 
 	}
 
-	private void UpdateParameters(float timeDelta) {
-		//clear all parameter negative values
-		foreach(Parameter p in Parameters) {
-			p.IsUsedAndIsZero = false;
-			p.IsDraggedDownBy.Clear();
-			p.IsDraggingDown = false;
-		}
-
-		//actual situation changes
-		foreach(Change change in ActualSituation.Situation.Changes) {
-			change.UpdateParams(timeDelta);
-		}
-
-		//all time changes
-		foreach(Change change in Model.TimeChanges.Changes) {
-			change.UpdateParams(timeDelta);
-		}
-
-
-		//update all params 
-		foreach(Parameter p in Parameters) {
-			p.UpdateValuesFromPreviousLoop();
-		}
-	}
-
 	private void HourHasChanged(int hour) {
-		PanelCenter.HourHasChanged(hour, Parameters);
-	}
-
-	public void Faster() {
-		
+		PanelCenter.HourHasChanged(hour, GameState);
 	}
 
 	public void ChangeToPanelSchedule() {
