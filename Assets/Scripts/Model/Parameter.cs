@@ -53,7 +53,7 @@ public class Parameter {
 		}
 
 		if (ActualValue < 0f && ZeroEndsGame) {
-			throw new Exception("End game.");
+			Game.Me.EndGame();
 		}
 
 		if (ActualValue < 0f) {

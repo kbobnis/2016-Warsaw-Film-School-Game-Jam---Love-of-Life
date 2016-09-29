@@ -10,57 +10,20 @@ public class Game : MonoBehaviour {
 
 	public PanelSchedule PanelSchedule;
 	public PanelCenter PanelCenter;
+	public PanelSelectModule PanelSelectModule;
 
 	public GameState GameState;
 
 	// Use this for initialization
 	void Awake () {
 		Me = this;
-		PanelCenter.gameObject.SetActive(true);
-		
-		PanelSchedule.gameObject.SetActive(false);
-
-		XmlDocument model = new XmlDocument();
-		string modelDir = "love_of_life";
-
-		model.LoadXml(Resources.Load<TextAsset>(modelDir).text);
-		//getting rid of comments
-		string pattern = "(<!--.*?--\\>)";
-		model.InnerXml = Regex.Replace(model.InnerXml, pattern, string.Empty, RegexOptions.Singleline);
-
-		List<Parameter> parameters = XmlLoader.LoadParameters(model);
-		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
-		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
-
-		GameState = new GameState(parameters, scheduledSituations, new Model(XmlLoader.LoadTime(model, parameters)));
-
-		PanelSchedule.Init(scheduledSituations, situations, parameters);
-		PanelCenter.Init(PanelSchedule.Schedule, parameters);
-		
-		HourHasChanged(0);
-		ChangeToPanelCenter();
+		ChangeToPanelSelectModule();
 	}
 
-	internal void EndGame(Parameter parameter) {
-		
-	}
-
-	// Update is called once per frame
 	void Update () {
-		int gameTimeNormalized = GameState.HourOfDay;
-		float timeDelta = Time.deltaTime / 60f * GameState.ActualGameSpeed;
-		GameState.UpdateParameters(timeDelta);
-		
-		GameState.GameTime += timeDelta;
-		int gameTimeNormalizedAfter = GameState.HourOfDay;
-		if(gameTimeNormalizedAfter != gameTimeNormalized) {
-			HourHasChanged(gameTimeNormalizedAfter);
+		if (GameState != null) {
+			GameState.Update(Time.deltaTime);
 		}
-
-	}
-
-	private void HourHasChanged(int hour) {
-		PanelCenter.HourHasChanged(hour, GameState);
 	}
 
 	public void ChangeToPanelSchedule() {
@@ -72,5 +35,37 @@ public class Game : MonoBehaviour {
 		PanelCenter.gameObject.SetActive(true);
 		PanelCenter.UpdateSchedule();
 		PanelSchedule.gameObject.SetActive(false);
+		PanelSelectModule.gameObject.SetActive(false);
 	}
+
+	private void ChangeToPanelSelectModule() {
+		PanelCenter.gameObject.SetActive(false);
+		PanelSchedule.gameObject.SetActive(false);
+		PanelSelectModule.gameObject.SetActive(true);
+	}
+
+	internal void LoadModule(string moduleId) {
+		XmlDocument model = new XmlDocument();
+		string modelDir = moduleId;
+
+		model.LoadXml(Resources.Load<TextAsset>(modelDir).text);
+		//getting rid of comments
+		string pattern = "(<!--.*?--\\>)";
+		model.InnerXml = Regex.Replace(model.InnerXml, pattern, string.Empty, RegexOptions.Singleline);
+
+		List<Parameter> parameters = XmlLoader.LoadParameters(model);
+		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
+		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
+
+		GameState = new GameState(parameters, situations, scheduledSituations, new Model(XmlLoader.LoadTime(model, parameters)));
+
+		PanelSchedule.Init(GameState);
+		PanelCenter.Init(GameState);
+		ChangeToPanelCenter();
+	}
+
+	internal void EndGame() {
+		ChangeToPanelSelectModule();
+	}
+
 }

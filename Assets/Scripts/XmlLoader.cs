@@ -81,7 +81,6 @@ internal class XmlLoader {
 				Situation situation = situations.First(t => t.Id == situationId);
 				schedule.AddSituation(from, duration, situation, isPermament);
 
-
 			}
 			return schedule;
 		} catch(Exception e) {

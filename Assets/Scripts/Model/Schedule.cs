@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Schedule {
 
 	public readonly Situation DefaultSituation;
-	private List<ScheduledSituation> situations = new List<ScheduledSituation>();
+	public List<ScheduledSituation> Situations = new List<ScheduledSituation>();
 
 	public Schedule(Situation defaultSituation) {
 		DefaultSituation = defaultSituation;
@@ -28,24 +28,24 @@ public class Schedule {
 		}
 
 		ScheduledSituation ss = new ScheduledSituation(from, duration, situation, permament);
-		foreach(ScheduledSituation ssTmp in situations) {
+		foreach(ScheduledSituation ssTmp in Situations) {
 			if (AreOverlapping(ssTmp, ss)) {
 				throw new Exception("Schedules are overlapping: " + ss + ", and: " + ssTmp);
 			}
 		}
-		situations.Add(ss);
+		Situations.Add(ss);
 	}
 
 	private void RemoveSituation(int from) {
 		ScheduledSituation tmp = null;
-		foreach(ScheduledSituation ss in situations) {
+		foreach(ScheduledSituation ss in Situations) {
 			if (ss.From == from) {
 				tmp = ss;
 			}
 		}
 
 		if (tmp != null) {
-			situations.Remove(tmp);
+			Situations.Remove(tmp);
 		}
 	}
 
@@ -64,7 +64,7 @@ public class Schedule {
 			throw new Exception("There is no more hours in doba, but you gave: " + hour);
 		}
 
-		foreach(ScheduledSituation ss in situations) {
+		foreach(ScheduledSituation ss in Situations) {
 			if (hour == ss.From || (hour > ss.From && hour < ss.From + ss.Duration)) {
 				return ss;
 			}

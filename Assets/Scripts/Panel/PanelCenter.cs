@@ -9,34 +9,43 @@ public class PanelCenter : MonoBehaviour {
 	public PanelSituation PanelSituation;
 	public CenterPanelParameters PanelParameters;
 
+	private int? LastHourOfDay;
 	public Situation ActualSituation;
-	public Schedule Schedule;
+	private GameState GameState;
 
-	internal void UpdateSchedule() {
-
-		int i = 0;
-		foreach(Transform scheduleHour in SchedulePeak) {
-			ScheduledSituation s = Schedule.getSituationForHour(i);
-			scheduleHour.GetComponentInChildren<Text>().text = s!=null?s.Situation.Text:"";
-			i++;
+	void Update() {
+		if (GameState != null) {
+			int hour = Game.Me.GameState.HourOfDay;
+			if (LastHourOfDay != hour) {
+				HourHasChanged(hour);
+				LastHourOfDay = hour;
+			}
 		}
-		
 	}
 
-	internal void HourHasChanged(int newHour, GameState gameState) {
-		ScheduledSituation ss = Schedule.getSituationForHour(newHour);
+	internal void UpdateSchedule() {
+		int i = 0;
+		foreach (Transform scheduleHour in SchedulePeak) {
+			ScheduledSituation s = GameState.Schedule.getSituationForHour(i);
+			scheduleHour.GetComponentInChildren<Text>().text = s != null ? s.Situation.Text : "";
+			i++;
+		}
+	}
+
+	internal void HourHasChanged(int newHour) {
+		ScheduledSituation ss = GameState.Schedule.getSituationForHour(newHour);
 		Situation s = null;
 		if (ss == null) {
-			s = Schedule.DefaultSituation;
+			s = GameState.Schedule.DefaultSituation;
 		} else {
 			s = ss.Situation;
 		}
-		gameState.ActualSituation = new ScheduledSituation(gameState.HourOfDay, 1, s, false);
-		PanelSituation.HourHasChanged(newHour, s, gameState);
+		GameState.ActualSituation = new ScheduledSituation(GameState.HourOfDay, 1, s, false);
+		PanelSituation.HourHasChanged(newHour, s, GameState);
 	}
 
-	internal void Init(Schedule schedule, List<Parameter> parameters) {
-		Schedule = schedule;
-		PanelParameters.Init(parameters);
+	internal void Init(GameState gameState) {
+		GameState = gameState;
+		PanelParameters.Init(gameState.Parameters);
 	}
 }

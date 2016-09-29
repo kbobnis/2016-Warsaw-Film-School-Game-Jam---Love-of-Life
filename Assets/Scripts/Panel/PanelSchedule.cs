@@ -6,11 +6,16 @@ using System;
 
 public class PanelSchedule : MonoBehaviour {
 
-	public Schedule Schedule;
+	private GameState GameState;
 
-	internal void Init(Schedule schedule, List<Situation> situations, List<Parameter> parameters) {
+	internal void Init(GameState gameState) {
+		//Schedule schedule, List<Situation> situations, List<Parameter> parameters
 
-		Schedule = schedule;
+		GameState = gameState;
+		List<Parameter> parameters = GameState.Parameters;
+		Schedule schedule = GameState.Schedule;
+		List<Situation> situations = GameState.Situations;
+		
 		//prepare parameters
 		Transform parametersTransform = transform.GetChild(0);
 		{
@@ -50,12 +55,10 @@ public class PanelSchedule : MonoBehaviour {
 			}
 			j++;
 		}
-
-		
 	}
 
 	internal void ScheduleUpdated(int myHour, Situation ss) {
-		Schedule.Update(myHour, ss);
+		GameState.Schedule.Update(myHour, ss);
 	}
 
 	internal void PropositionWasSelected(Situation situation) {

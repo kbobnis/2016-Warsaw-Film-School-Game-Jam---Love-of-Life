@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class GameState {
 
@@ -6,13 +7,15 @@ public class GameState {
 	internal List<Parameter> Parameters;
 	public float ActualGameSpeed = 1f;
 	public float GameTime;
-	public Schedule ScheduledSituations;
+	public Schedule Schedule;
+	public List<Situation> Situations;
 	public ScheduledSituation ActualSituation;
 
-	public GameState(List<Parameter> parameters, Schedule scheduledSituations, Model model) {
+	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule scheduledSituations, Model model) {
+		Situations = situations;
 		ActualGameSpeed = model.TimeChanges.NormalSpeed;
 		Model = model;
-		ScheduledSituations = scheduledSituations;
+		Schedule = scheduledSituations;
 		ActualSituation = scheduledSituations.getSituationForHour(0, true);
 		Parameters = parameters;
 	}
@@ -23,7 +26,14 @@ public class GameState {
 		}
 	}
 
-	public int DayNumber { 
+	internal void Update(float deltaTime) {
+		int hourOfDay = HourOfDay;
+		float timeDelta = deltaTime / 60f * ActualGameSpeed;
+		GameTime += timeDelta;
+		UpdateParameters(timeDelta);
+	}
+
+	public int DayNumber {
 		get {
 			return (int)GameTime / 24;
 		}
