@@ -82,18 +82,23 @@ public class Game : MonoBehaviour {
 
 		//actual situation changes
 		foreach(Change change in ActualSituation.Situation.Changes) {
-			change.What.UpdateWithChange(change, timeDelta);
+			change.UpdateParams(timeDelta);
 		}
 
 		//all time changes
 		foreach(Change change in Model.TimeChanges.Changes) {
-			change.What.UpdateWithChange(change, timeDelta);
+			change.UpdateParams(timeDelta);
 		}
 
+
+		//update all params 
+		foreach(Parameter p in Parameters) {
+			p.UpdateValuesFromPreviousLoop();
+		}
 	}
 
 	private void HourHasChanged(int hour) {
-		PanelCenter.HourHasChanged(hour);
+		PanelCenter.HourHasChanged(hour, Parameters);
 	}
 
 	public void Faster() {

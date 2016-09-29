@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Parameter {
-	
+
 	public readonly string Id;
 	private float StartValue;
 	public readonly string Text;
@@ -19,6 +19,8 @@ public class Parameter {
 	public bool IsUsedAndIsZero;
 	public List<Parameter> IsDraggedDownBy = new List<Parameter>();
 	private readonly float DragDownIfZeroPenalty;
+	public float PreviousLoopMaxValueDelta;
+	public float PreviousLoopValueDelta;
 
 	public Parameter(string id, float startValue, string text, bool zeroEndsGame, float dragDownIfZeroPenalty) {
 		Id = id;
@@ -38,33 +40,18 @@ public class Parameter {
 		return MaxValue != null;
 	}
 
-	internal bool CanUpdateWithoutOverflow(Change c, float? timeDelta = null) {
-		bool canIt = true;
-		if (c.ValueCalculation != null) {
-			canIt = ActualValue >= c.ValueCalculation.Calculate(timeDelta);
-		}
-		return canIt;
+	public void UpdateValuesFromPreviousLoop() {
+		ActualMaxValueMultiplier += PreviousLoopMaxValueDelta;
+		PreviousLoopMaxValueDelta = 0;
+		ActualValue += PreviousLoopValueDelta;
+		PreviousLoopValueDelta = 0;
 	}
 
-	public void UpdateWithChange(Change c, float? timeDelta = null) {
-		if (c.MaxValueCalculation != null) {
-			float deltaMaxValue = c.MaxValueCalculation.Calculate(timeDelta);
-			ActualMaxValueMultiplier += deltaMaxValue;
-		}
-
-		if (c.ValueCalculation != null) {
-			float deltaValue = c.ValueCalculation.Calculate(timeDelta);
-			ActualValue += deltaValue;
-		}
-
+	public void DragDown() {
 		if (MaxValue != null && ActualValue > MaxValue.Calculate() * ActualMaxValueMultiplier) {
 			ActualValue = MaxValue.Calculate() * ActualMaxValueMultiplier;
 		}
 
-		DragDown();
-	}
-
-	public void DragDown() {
 		if (ActualValue < 0f && ZeroEndsGame) {
 			throw new Exception("End game.");
 		}

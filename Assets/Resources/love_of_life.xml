@@ -1,13 +1,13 @@
 <root>
 	<parameters dragDownIfZeroPenalty="2">
-		<param id="walletStatus" text="zasobność portfela" startValue="0.5" maxValue="1" dragDownIfZero="fridgeStatus,happiness" />
-		<param id="fridgeStatus" text="zapełnienie lodówki" startValue="0.8" maxValue="1" dragDownIfZero="concentration,happiness"/>
-		<param id="concentration" text="koncetracja" startValue="0.7" maxValue="condition" dragDownIfZero="happiness"/>
-		<param id="condition" text="kondycja" startValue="1" maxValue="1" dragDownIfZero="concentration,happiness"/>
-		<param id="houseClean" text="Porządek w mieszkaniu" startValue="1" maxValue="1" dragDownIfZero="happiness"/>
-		<param id="happiness" text="szczęście" startValue="0.5" maxValue="1" zeroEndsGame="true"/>
-		<param id="salary" text="wynagrodzenie" startValue="0.4" maxValue="1" />
+		<param id="walletStatus" text="Pieniądze" startValue="0.5" maxValue="1" dragDownIfZero="fridgeStatus,happiness" />
+		<param id="fridgeStatus" text="Jedzenie" startValue="0.8" maxValue="1" dragDownIfZero="concentration,happiness"/>
+		<param id="concentration" text="Koncetracja" startValue="0.7" maxValue="condition" dragDownIfZero="happiness"/>
+		<param id="condition" text="Kondycja" startValue="1" maxValue="1" dragDownIfZero="concentration,happiness"/>
+		<param id="houseClean" text="Porządek" startValue="1" maxValue="1" dragDownIfZero="happiness"/>
+		<param id="salary" text="Wynagrodzenie" startValue="0.4" maxValue="1" />
 		<param id="cleaningService" text="Usługa sprzątania" startValue="0.0" maxValue="1"/>
+		<param id="happiness" text="Szczęście" startValue="0.5" maxValue="1" zeroEndsGame="true"/>		
 	</parameters>
 
 	<schedule default="house">
@@ -64,23 +64,23 @@
 			<change what="concentration" value="-0.02" />
 			
 			<button text="Wynajmij sprzątaczkę" >
-				<change what="cleaningService" value="1" />
+				<change what="cleaningService" value="maxValue-cleaningService" />
 				<change what="walletStatus" value="-0.5" />
 			</button>
 			<button text="Zwolnij sprzątaczkę" >
 				<change what="cleaningService" value="-1" />
 			</button>
 			<button text="Kup większą lodówkę" >
+				<change what="walletStatus" value="-1 * maxValue-fridgeStatus" />
 				<change what="fridgeStatus" maxValue="0.5 * maxValue-fridgeStatus" />
-				<change what="walletStatus" value="maxValue-fridgeStatus" />
 			</button>
 			<button text="Kup lepsze mieszkanie" >
-				<change what="houseClean" maxValue="maxValue-houseClean" />
 				<change what="walletStatus" value="-2 * maxValue-houseClean" />
+				<change what="houseClean" maxValue="maxValue-houseClean" />
 			</button>
 			<button text="Kup większy portfel" >
-				<change what="walletStatus" maxValue="0.5 * maxValue-walletStatus" />
 				<change what="walletStatus" value="-0.5 * maxValue-walletStatus" />
+				<change what="walletStatus" maxValue="0.5 * maxValue-walletStatus" />
 			</button>
 			
 		</situation>
