@@ -16,6 +16,7 @@ public class Game : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
+		Screen.fullScreen = false;
 		Me = this;
 		ChangeToPanelSelectModule();
 	}
