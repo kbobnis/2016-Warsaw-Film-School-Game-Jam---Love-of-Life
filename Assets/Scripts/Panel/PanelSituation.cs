@@ -9,7 +9,7 @@ public class PanelSituation : MonoBehaviour {
 	private GameState GameState;
 
 	internal void UpdateActiveSituation(Situation actualSituation, GameState gameState) {
-		GetComponentsInChildren<Text>()[0].text = "Dzień " + (gameState.DayNumber + 1) + ", godzina " + gameState.HourOfDay;
+		GetComponentsInChildren<Text>()[0].text = "Dzień " + gameState.DayNumber + ", godzina " + gameState.HourOfDay;
 		GetComponentsInChildren<Text>()[1].text = "W tej chwili: \n\n" + actualSituation.Text;
 
 		//show buttons on second panel

@@ -11,6 +11,7 @@ internal class XmlLoader {
 		XmlNode parametersXml = model.GetElementsByTagName("parameters")[0];
 
 		//loading parameter ids
+		List<Parameter> mainParameters = new List<Parameter>();
 		List<string> parameterIds = new List<string>();
 		float dragDownIfZeroPenalty = float.Parse(parametersXml.Attributes["dragDownIfZeroPenalty"].Value);
 		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
@@ -27,13 +28,17 @@ internal class XmlLoader {
 			}
 			//Calculation maxValue = Calculation.from parameterXml.Attributes["maxValue"].Value
 			float startValue = parameterXml.Check("startValue") ? float.Parse(parameterXml.Attributes["startValue"].Value) : 0;
-			bool zeroEndsGame = parameterXml.Check("zeroEndsGame") ? parameterXml.Attributes["zeroEndsGame"].Value == "true" : false;
 			if (!parameterXml.Check("text")) {
 				throw new Exception("There is no text in parameter " + id);
 			}
+			bool isMain = parameterXml.Check("isMain") ? parameterXml.Attributes["isMain"].Value == "true" : false;
 			string text = parameterXml.Attributes["text"].Value;
 
-			parameters.Add(new Parameter(id, startValue, text, zeroEndsGame, dragDownIfZeroPenalty));
+			Parameter p = new Parameter(id, startValue, text, dragDownIfZeroPenalty, isMain);
+			parameters.Add(p);
+			if (p.IsMain) {
+				mainParameters.Add(p);
+			}
 		}
 
 		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
@@ -41,6 +46,7 @@ internal class XmlLoader {
 			Calculation maxValue = new Calculation(parameterXml.Attributes["maxValue"].Value, parameters);
 
 			List<Parameter> dragDownIfZero = new List<Parameter>();
+			dragDownIfZero.AddRange(mainParameters);
 			if (parameterXml.Check("dragDownIfZero")) {
 				string[] thisParameterIds = parameterXml.Attributes["dragDownIfZero"].Value.Split(',');
 
@@ -48,6 +54,9 @@ internal class XmlLoader {
 					bool found = false;
 					foreach (Parameter p in parameters) {
 						if (p.Id == pTmp) {
+							if (p.IsMain) {
+								throw new Exception(p.Text + " is main parameter already. It will be dragged down if under zero.");
+							}
 							dragDownIfZero.Add(p);
 							found = true;
 						}
@@ -83,7 +92,7 @@ internal class XmlLoader {
 
 			}
 			return schedule;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new Exception("When loading schedule: " + e.Message);
 		}
 	}

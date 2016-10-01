@@ -7,13 +7,14 @@ public class Parameter {
 	public readonly string Id;
 	private float StartValue;
 	public readonly string Text;
-	public readonly bool ZeroEndsGame;
+	public readonly bool IsMain;
 
 	public Calculation MaxValue;
 	public float ActualMaxValueMultiplier { get; private set; }
 
 	public float ActualValue;
 	public List<Parameter> DragDownIfZero;
+	
 
 	public bool IsDraggingDown;
 	public bool IsUsedAndIsZero;
@@ -22,13 +23,13 @@ public class Parameter {
 	public float PreviousLoopMaxValueDelta;
 	public float PreviousLoopValueDelta;
 
-	public Parameter(string id, float startValue, string text, bool zeroEndsGame, float dragDownIfZeroPenalty) {
+	public Parameter(string id, float startValue, string text, float dragDownIfZeroPenalty, bool isMain) {
 		Id = id;
 		StartValue = startValue;
 		Text = text;
 		ActualValue = startValue;
 		ActualMaxValueMultiplier = 1;
-		ZeroEndsGame = zeroEndsGame;
+		IsMain = isMain;
 		DragDownIfZeroPenalty = dragDownIfZeroPenalty;
 	}
 
@@ -52,11 +53,7 @@ public class Parameter {
 			ActualValue = MaxValue.Calculate() * ActualMaxValueMultiplier;
 		}
 
-		if (ActualValue < 0f && ZeroEndsGame) {
-			Game.Me.EndGame();
-		}
-
-		if (ActualValue < 0f) {
+		if (ActualValue < 0f && !IsMain) { //if this is main, then this is already over
 			if (DragDownIfZero != null) {
 				float howMuch = -ActualValue / DragDownIfZero.Count;
 				IsDraggingDown = true;
@@ -65,6 +62,15 @@ public class Parameter {
 				}
 			}
 			ActualValue = 0f;
+		}
+
+		if (IsMain) {
+			if (ActualValue <= 0f) {
+				Game.Me.EndGame(new Game.EndCondition.Lose(this, Game.Me.GameState));
+			}
+			if (ActualValue >= MaxValue.Calculate() * ActualMaxValueMultiplier) {
+				Game.Me.EndGame(new Game.EndCondition.Win(this, Game.Me.GameState));
+			}
 		}
 	}
 

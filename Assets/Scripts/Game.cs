@@ -11,6 +11,7 @@ public class Game : MonoBehaviour {
 	public PanelSchedule PanelSchedule;
 	public PanelCenter PanelCenter;
 	public PanelSelectModule PanelSelectModule;
+	public PanelEndGame PanelEndGame;
 
 	public GameState GameState;
 
@@ -65,8 +66,49 @@ public class Game : MonoBehaviour {
 		ChangeToPanelCenter();
 	}
 
-	internal void EndGame() {
-		ChangeToPanelSelectModule();
+	internal void EndGame(EndCondition endCondition) {
+		GameState.GameHasEnded = true;
+		ChangePanel(typeof(PanelEndGame));
+		PanelSelectModule.gameObject.SetActive(true);
+		PanelEndGame.Init(endCondition);
 	}
 
+	private void ChangePanel(Type type) {
+		PanelCenter.gameObject.SetActive(type == typeof(PanelCenter));
+		PanelSchedule.gameObject.SetActive(type == typeof(PanelSchedule));
+		PanelSelectModule.gameObject.SetActive(type == typeof(PanelSelectModule));
+		PanelEndGame.gameObject.SetActive(type == typeof(PanelEndGame));
+	}
+
+	internal abstract class EndCondition {
+		internal abstract string GetText();
+
+		internal class Lose : EndCondition {
+			private Parameter Parameter;
+			private GameState GameState;
+
+			public Lose(Parameter parameter, GameState gameState) {
+				Parameter = parameter;
+				GameState = gameState;
+			}
+
+			internal override string GetText() {
+				return "Przegrałeś w dniu " + GameState.DayNumber + ", bo wartośc parametru " + Parameter.Text + " spadła poniżej zera.";
+			}
+		}
+
+		internal class Win : EndCondition {
+			private Parameter Parameter;
+			private GameState GameState;
+
+			public Win(Parameter parameter, GameState gameState) {
+				Parameter = parameter;
+				GameState = gameState;
+			}
+
+			internal override string GetText() {
+				return "Wygrałeś w dniu " + GameState.DayNumber + ", bo wartość parametru " + Parameter.Text + " osiągnęła maksimum.";
+			}
+		}
+	}
 }

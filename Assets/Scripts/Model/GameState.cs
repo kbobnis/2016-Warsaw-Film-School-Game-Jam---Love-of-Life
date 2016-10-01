@@ -10,6 +10,7 @@ public class GameState {
 	public Schedule Schedule;
 	public List<Situation> Situations;
 	public ScheduledSituation ActualSituation;
+	public bool GameHasEnded;
 
 	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule scheduledSituations, Model model) {
 		Situations = situations;
@@ -27,15 +28,17 @@ public class GameState {
 	}
 
 	internal void Update(float deltaTime) {
-		int hourOfDay = HourOfDay;
-		float timeDelta = deltaTime / 60f * ActualGameSpeed;
-		GameTime += timeDelta;
-		UpdateParameters(timeDelta);
+		if (!GameHasEnded) {
+			int hourOfDay = HourOfDay;
+			float timeDelta = deltaTime / 60f * ActualGameSpeed;
+			GameTime += timeDelta;
+			UpdateParameters(timeDelta);
+		}
 	}
 
 	public int DayNumber {
 		get {
-			return (int)GameTime / 24;
+			return (int)GameTime / 24 + 1;
 		}
 	}
 
