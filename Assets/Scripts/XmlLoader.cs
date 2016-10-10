@@ -3,6 +3,7 @@ using System.Xml;
 using System.Linq;
 using System;
 using LOL;
+using System.Xml.Linq;
 
 internal class XmlLoader {
 
@@ -71,15 +72,59 @@ internal class XmlLoader {
 		return parameters;
 	}
 
-	internal static Schedule LoadSchedule(XmlDocument model, List<Situation> situations) {
+	internal static List<Plot.Element> LoadPlot(XElement plotXml, List<Parameter> parameters, List<Situation> situations) {
+		List<Plot.Element> plotElements = new List<Plot.Element>();
+		foreach (XElement plotElementXml in plotXml.Elements()) {
+			string text = plotElementXml.Attribute("text").Value;
+			List<Plot.Element.Goal> plotGoals = LoadPlotGoals(plotElementXml.Elements("goal"), parameters);
+			Schedule scheduleOverride = plotElementXml.Element("schedule")!=null?LoadSchedule(ToXmlElement( plotElementXml.Element("schedule") ), situations):null;
+			plotElements.Add(new Plot.Element(text, plotGoals, scheduleOverride));
+		}
+		return plotElements;
+	}
+
+	private static XmlNode ToXmlElement(XElement element) {
+		XmlDocument doc = new XmlDocument();
+		doc.LoadXml(element.ToString());
+		return doc.FirstChild;
+	}
+
+	private static List<Plot.Element.Goal> LoadPlotGoals(IEnumerable<XElement> plotGoals, List<Parameter> parameters) {
+		List<Plot.Element.Goal> goals = new List<Plot.Element.Goal>();
+		foreach (XElement goalXml in plotGoals) {
+			if (goalXml.Name != "goal") {
+				throw new Exception("There is something wrong with plot goal, it has wrong name: " + goalXml.Name);
+			}
+			//its paramId or dayNumber
+			if (goalXml.Attribute("dayNumber") != null) {
+				int dayNumber = int.Parse(goalXml.Attribute("dayNumber").Value);
+				goals.Add(new Plot.Element.DayNumberGoal(dayNumber));
+			} else if (goalXml.Attribute("paramId") != null) {
+				string id = goalXml.Attribute("paramId").Value;
+				Parameter p = parameters.FirstOrDefault(t => t.Id == id);
+				if (p == null) {
+					throw new Exception("There is no parameter with id: " + id);
+				}
+				float desiredValue = float.Parse(goalXml.Attribute("value").Value);
+				goals.Add(new Plot.Element.ParameterValueGoal(p, desiredValue));
+			} else {
+				throw new Exception("You must define dayNumber or paramId.");
+			}
+		}
+		return goals;
+	}
+
+	internal static Schedule LoadSchedule(XmlNode scheduleXml, List<Situation> situations) {
 		try {
-			XmlNode scheduleXml = model.GetElementsByTagName("schedule")[0];
-			Situation defaultSituation = situations.FirstOrDefault(t => t.Id == scheduleXml.Attributes["default"].Value);
-			if (defaultSituation == null) {
-				throw new Exception("When loading default situation. There is no situaion with id " + scheduleXml.Attributes["default"].Value + ".");
+			Situation defaultSituation = null;
+			if (scheduleXml.Check("default")) {
+				defaultSituation = situations.FirstOrDefault(t => t.Id == scheduleXml.Attributes["default"].Value);
+				if (defaultSituation == null) {
+					throw new Exception("When loading default situation. There is no situaion with id " + scheduleXml.Attributes["default"].Value + ".");
+				}
 			}
 			Schedule schedule = new Schedule(defaultSituation);
-			foreach (XmlNode scheduledSituation in model.GetElementsByTagName("schedule")[0].ChildNodes) {
+			foreach (XmlNode scheduledSituation in scheduleXml.ChildNodes) {
 				int from = int.Parse(scheduledSituation.Attributes["from"].Value);
 				int duration = int.Parse(scheduledSituation.Attributes["duration"].Value);
 				bool isPermament = scheduledSituation.Check("isPermament") ? scheduledSituation.Attributes["isPermament"].Value == "true" : false;
@@ -200,8 +245,8 @@ internal class XmlLoader {
 
 		return new Change(what, valueCalculation, maxValueCalculation, perTime);
 	}
-}
 
+}
 
 public static class XmlNodeExtensions {
 

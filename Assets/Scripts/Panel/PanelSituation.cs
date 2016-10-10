@@ -11,9 +11,10 @@ public class PanelSituation : MonoBehaviour {
 	internal void UpdateActiveSituation(Situation actualSituation, GameState gameState) {
 		GetComponentsInChildren<Text>()[0].text = "Dzień " + gameState.DayNumber + ", godzina " + gameState.HourOfDay;
 		GetComponentsInChildren<Text>()[1].text = "W tej chwili: \n\n" + actualSituation.Text;
+		gameObject.FindByName<Text>("QuestText").text = gameState.ActualPlotElement.GetInfo();
 
 		//show buttons on second panel
-		Transform panelButtons = transform.GetChild(2);
+		Transform panelButtons = gameObject.FindByName<Transform>("PanelButtons");
 		int i = 0;
 		foreach (Transform button in panelButtons) {
 			button.gameObject.SetActive(i < actualSituation.Buttons.Count);

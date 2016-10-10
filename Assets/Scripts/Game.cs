@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Linq;
 using UnityEngine;
 
 public class Game : MonoBehaviour {
@@ -35,7 +37,6 @@ public class Game : MonoBehaviour {
 
 	public void ChangeToPanelCenter() {
 		PanelCenter.gameObject.SetActive(true);
-		PanelCenter.UpdateSchedule();
 		PanelSchedule.gameObject.SetActive(false);
 		PanelSelectModule.gameObject.SetActive(false);
 	}
@@ -55,11 +56,16 @@ public class Game : MonoBehaviour {
 		string pattern = "(<!--.*?--\\>)";
 		model.InnerXml = Regex.Replace(model.InnerXml, pattern, string.Empty, RegexOptions.Singleline);
 
+
 		List<Parameter> parameters = XmlLoader.LoadParameters(model);
 		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
-		Schedule scheduledSituations = XmlLoader.LoadSchedule(model, situations);
+		Schedule schedule = XmlLoader.LoadSchedule(model.GetElementsByTagName("schedule")[0], situations);
+		XElement xElement = XElement.Parse(Resources.Load<TextAsset>(modelDir).text);
+		List<Plot.Element> plotElements = XmlLoader.LoadPlot(xElement.Elements().First(t => t.Name == "plot"), parameters, situations);
 
-		GameState = new GameState(parameters, situations, scheduledSituations, new Model(XmlLoader.LoadTime(model, parameters)));
+		GameState = new GameState(parameters, situations, schedule, new Model(XmlLoader.LoadTime(model, parameters)), new Plot(plotElements));
+		GameState.Schedule.AddScheduleUpdateSituation(PanelSchedule);
+		GameState.Schedule.AddScheduleUpdateSituation(PanelCenter);
 
 		PanelSchedule.Init(GameState);
 		PanelCenter.Init(GameState);
@@ -98,16 +104,14 @@ public class Game : MonoBehaviour {
 		}
 
 		internal class Win : EndCondition {
-			private Parameter Parameter;
-			private GameState GameState;
+			private Plot.Element PlotElement;
 
-			public Win(Parameter parameter, GameState gameState) {
-				Parameter = parameter;
-				GameState = gameState;
+			public Win(Plot.Element plotElement) {
+				PlotElement = plotElement;
 			}
 
 			internal override string GetText() {
-				return "Wygrałeś w dniu " + GameState.DayNumber + ", bo wartość parametru " + Parameter.Text + " osiągnęła maksimum.";
+				return "Wygrałeś, bo skończyłeś zadanie: " + PlotElement.Text;
 			}
 		}
 	}

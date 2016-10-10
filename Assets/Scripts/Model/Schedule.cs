@@ -5,12 +5,13 @@ public class Schedule {
 
 	public readonly Situation DefaultSituation;
 	public List<ScheduledSituation> Situations = new List<ScheduledSituation>();
+	public List<ScheduleUpdateListener> ScheduleUpdateListeners = new List<ScheduleUpdateListener>();
 
 	public Schedule(Situation defaultSituation) {
 		DefaultSituation = defaultSituation;
 	}
 
-	internal void AddSituation(int from, int duration, Situation situation, bool permament) {
+	internal void AddSituation(int from, int duration, Situation situation, bool permament, bool @override=false) {
 		if (situation == null) {
 			RemoveSituation(from);
 			return;
@@ -22,18 +23,26 @@ public class Schedule {
 		}
 		if (duration > 1) {
 			for (int i = 0; i < duration; i++) {
-				AddSituation(from + i, 1, situation, permament);
+				AddSituation(from + i, 1, situation, permament, @override);
 			}
 			return;
 		}
 
 		ScheduledSituation ss = new ScheduledSituation(from, duration, situation, permament);
-		foreach(ScheduledSituation ssTmp in Situations) {
+		ScheduledSituation[] s = Situations.ToArray();
+		foreach (ScheduledSituation ssTmp in s) {
 			if (AreOverlapping(ssTmp, ss)) {
-				throw new Exception("Schedules are overlapping: " + ss + ", and: " + ssTmp);
+				if (@override) {
+					Situations.Remove(ssTmp);
+					break;
+				} else {
+					throw new Exception("Schedules are overlapping: " + ss + ", and: " + ssTmp);
+				}
 			}
 		}
 		Situations.Add(ss);
+		Situations.Sort((t, y) => t.From.CompareTo(y.From));
+		ScheduleUpdated();
 	}
 
 	private void RemoveSituation(int from) {
@@ -72,7 +81,29 @@ public class Schedule {
 		return includeDefault?new ScheduledSituation(hour, 1, DefaultSituation, false):null;
 	}
 
+	internal void AddScheduleUpdateSituation(ScheduleUpdateListener listener) {
+		ScheduleUpdateListeners.Add(listener);
+	}
+
+	internal void OverrideSchedule(Schedule scheduleOverride) {
+		if (scheduleOverride != null) {
+			foreach (ScheduledSituation ss in scheduleOverride.Situations) {
+				AddSituation(ss.From, ss.Duration, ss.Situation, ss.Permament, true);
+			}
+		}
+	}
+
+	private void ScheduleUpdated() {
+		foreach(ScheduleUpdateListener listener in ScheduleUpdateListeners) {
+			listener.ScheduleUpdated(Situations);
+		}
+	}
+
 	internal void Update(int hour, Situation ss) {
 		AddSituation(hour, 1, ss, false);
+	}
+
+	public interface ScheduleUpdateListener {
+		void ScheduleUpdated(List<ScheduledSituation> situations);
 	}
 }

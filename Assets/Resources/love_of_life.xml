@@ -82,49 +82,34 @@
 				<change what="walletStatus" value="-0.5 * maxValue-walletStatus" />
 				<change what="walletStatus" maxValue="0.5 * maxValue-walletStatus" />
 			</button>
-			
 		</situation>
-
 		<situation id="work" text="Praca">
 			<change what="walletStatus" value="concentration * salary"/>
 			<change what="concentration" value="-0.12"/>
 		</situation>
-
 		<situation id="schooling" text="Praca na awans">
 			<change what="salary" value="0.01 * concentration"/>
 			<change what="concentration" value="-0.06" />
 		</situation>
-
 		<situation id="brake" text="Przerwa" selectable="false">
 			<change what="happiness" value="0.05 * getOne-condition "/>
 		</situation>
-		
-		<situation id="fight" text=w "Walka" selectable="false">
-			<change what="condition" value="-0.10 + defence"/>
-			
-			<button text="Cios" >
-				<change what="walletStatus" value="-1 * maxValue-fridgeStatus" />
-				<change what="fridgeStatus" maxValue="0.5 * maxValue-fridgeStatus" />
-			</button>
-		</situation>
-
 	</situations>
 
 	<plot>
-		<plotElement text="Jestem pustelnikiem i żyjesz.">
-			<!--<reach paramId="concentration" value="1" />-->
-			<reach dayNumber="2" />
+		<plotElement text="Dopiero jak się ogarnę, zacznę się martwić o resztę">
+			<goal dayNumber="2" />
 		</plotElement>
-		<plotElement text="Przygarnąłem nieznajomego, jego stan jest ciężki.">
-			<reach dayNumber="4" />
-		</plotElement>
-		<plotElement text="Okazało się, że Tom chce mnie zabić, walczę z nim.">
+		<plotElement text="Nie osiągnę szczęścia to umrę">
 			<schedule>
-				<scheduledSituation from="0" duration="24" id="fight" isPermament="true"/>
+				<scheduledSituation from="0" duration="1" id="house" isPermament="false"/>
+				<scheduledSituation from="8" duration="4" id="work" isPermament="false"/>
+				<scheduledSituation from="12" duration="1" id="brake" isPermament="false"/>
+				<scheduledSituation from="13" duration="4" id="work" isPermament="false"/>
 			</schedule>
-			<reach paramId="tomsHealth" value="0" />
+			<goal paramId="happiness" value="10" />
+			<goal dayNumber="4" />
 		</plotElement>
-
 	</plot>
 	
 	</root>

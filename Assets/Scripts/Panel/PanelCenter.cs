@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class PanelCenter : MonoBehaviour {
+public class PanelCenter : MonoBehaviour, Schedule.ScheduleUpdateListener {
 
 	public Transform SchedulePeak;
 	public PanelSituation PanelSituation;
@@ -45,5 +47,10 @@ public class PanelCenter : MonoBehaviour {
 	internal void Init(GameState gameState) {
 		GameState = gameState;
 		PanelParameters.Init(gameState.Parameters);
+		UpdateSchedule();
+	}
+
+	public void ScheduleUpdated(List<ScheduledSituation> situations) {
+		UpdateSchedule();
 	}
 }

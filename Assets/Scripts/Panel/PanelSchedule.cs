@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 
-public class PanelSchedule : MonoBehaviour {
+public class PanelSchedule : MonoBehaviour, Schedule.ScheduleUpdateListener {
 
 	private GameState GameState;
 
@@ -77,9 +77,23 @@ public class PanelSchedule : MonoBehaviour {
 
 	private List<ButtonSchedule> GetAllScheduleButtons() {
 		List<ButtonSchedule> scheduleButtons = new List<ButtonSchedule>();
-		foreach (Transform hour in transform.GetChild(1).GetChild(0).GetChild(1)) {
+		Transform panelHours = gameObject.FindByName<Transform>("Hours");
+		foreach (Transform hour in panelHours) {
 			scheduleButtons.Add(hour.GetComponentInChildren<ButtonSchedule>());
 		}
 		return scheduleButtons;
+	}
+
+	public void ScheduleUpdated(List<ScheduledSituation> situations) {
+		UpdateSchedule(situations);
+	}
+
+	private void UpdateSchedule(List<ScheduledSituation> situations) {
+		IEnumerable<ButtonSchedule> scheduleButtons = GetAllScheduleButtons();
+		int i = 0;
+		foreach (ButtonSchedule bs in scheduleButtons) {
+			bs.Init(situations[i].Situation, situations[i].Permament, this, i);
+			i++;
+		}
 	}
 }

@@ -1,10 +1,10 @@
 ﻿public class ScheduledSituation {
 	public readonly int Duration;
-	public readonly float From;
+	public readonly int From;
 	public readonly Situation Situation;
 	public readonly bool Permament;
 
-	public ScheduledSituation(float from, int duration, Situation situation, bool permament) {
+	public ScheduledSituation(int from, int duration, Situation situation, bool permament) {
 		From = from;
 		Duration = duration;
 		Situation = situation;

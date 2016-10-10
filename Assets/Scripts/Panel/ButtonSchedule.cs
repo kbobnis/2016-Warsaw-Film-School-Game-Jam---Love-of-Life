@@ -7,7 +7,6 @@ public class ButtonSchedule : MonoBehaviour {
 	private Situation ProposedSituation;
 	private PanelSchedule PanelSchedule;
 	private bool IsPermament;
-
 	private int MyHour;
 
 	private void RefreshMe() {

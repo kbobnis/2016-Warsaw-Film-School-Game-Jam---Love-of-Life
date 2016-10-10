@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class Parameter {
 
@@ -67,9 +65,6 @@ public class Parameter {
 		if (IsMain) {
 			if (ActualValue <= 0f) {
 				Game.Me.EndGame(new Game.EndCondition.Lose(this, Game.Me.GameState));
-			}
-			if (ActualValue >= MaxValue.Calculate() * ActualMaxValueMultiplier) {
-				Game.Me.EndGame(new Game.EndCondition.Win(this, Game.Me.GameState));
 			}
 		}
 	}
