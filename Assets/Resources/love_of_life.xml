@@ -107,8 +107,7 @@
 				<scheduledSituation from="12" duration="1" id="brake" isPermament="false"/>
 				<scheduledSituation from="13" duration="4" id="work" isPermament="false"/>
 			</schedule>
-			<goal paramId="happiness" value="10" />
-			<goal dayNumber="4" />
+			<goal paramId="happiness" value="1" />
 		</plotElement>
 	</plot>
 	

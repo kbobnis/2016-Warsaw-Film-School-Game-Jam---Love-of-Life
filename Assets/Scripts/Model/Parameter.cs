@@ -64,7 +64,7 @@ public class Parameter {
 
 		if (IsMain) {
 			if (ActualValue <= 0f) {
-				Game.Me.EndGame(new Game.EndCondition.Lose(this, Game.Me.GameState));
+				Game.Me.EndGame(new EndCondition.Lose(this, Game.Me.GameState));
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public static class GameObjectExtension  {
+public static class GameObjectExtension {
 
 	public static T FindByName<T>(this GameObject go, string name) where T : Component{
 		foreach (Transform t in go.GetComponentsInChildren<Transform>(true)) {

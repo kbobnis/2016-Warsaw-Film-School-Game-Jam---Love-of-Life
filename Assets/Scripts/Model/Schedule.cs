@@ -56,6 +56,7 @@ public class Schedule {
 		if (tmp != null) {
 			Situations.Remove(tmp);
 		}
+		ScheduleUpdated();
 	}
 
 	private bool AreOverlapping(ScheduledSituation ssTmp, ScheduledSituation ss) {
@@ -93,7 +94,7 @@ public class Schedule {
 		}
 	}
 
-	private void ScheduleUpdated() {
+	public void ScheduleUpdated() {
 		foreach(ScheduleUpdateListener listener in ScheduleUpdateListeners) {
 			listener.ScheduleUpdated(Situations);
 		}

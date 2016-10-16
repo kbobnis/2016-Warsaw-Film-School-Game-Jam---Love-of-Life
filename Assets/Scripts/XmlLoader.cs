@@ -73,12 +73,18 @@ internal class XmlLoader {
 	}
 
 	internal static List<Plot.Element> LoadPlot(XElement plotXml, List<Parameter> parameters, List<Situation> situations) {
+		if (plotXml == null) {
+			throw new Exception("A story must have at least one plot element.");
+		}
 		List<Plot.Element> plotElements = new List<Plot.Element>();
 		foreach (XElement plotElementXml in plotXml.Elements()) {
 			string text = plotElementXml.Attribute("text").Value;
 			List<Plot.Element.Goal> plotGoals = LoadPlotGoals(plotElementXml.Elements("goal"), parameters);
 			Schedule scheduleOverride = plotElementXml.Element("schedule")!=null?LoadSchedule(ToXmlElement( plotElementXml.Element("schedule") ), situations):null;
 			plotElements.Add(new Plot.Element(text, plotGoals, scheduleOverride));
+		}
+		if (plotElements[plotElements.Count-1].Goals.Any(t => t is Plot.Element.DayNumberGoal)) {
+			throw new Exception("You can not have any day number goal (only ParameterValueGoal)  in the last plot element. Because of high scores.");
 		}
 		return plotElements;
 	}

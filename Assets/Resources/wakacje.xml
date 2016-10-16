@@ -1,15 +1,15 @@
 <root>
 	<parameters dragDownIfZeroPenalty="2">
-		<param id="walletStatus" text="Pieni¹dze" startValue="10" maxValue="10" />
+		<param id="walletStatus" text="PieniÄ…dze" startValue="10" maxValue="10" />
 		<param id="concentration" text="Koncetracja" startValue="0.7" maxValue="1" />
-		<param id="happiness" text="Szczêœcie" startValue="0.5" maxValue="5" isMain="true"/>
+		<param id="happiness" text="SzczÄ™Å›cie" startValue="0.5" maxValue="5" isMain="true"/>
 	</parameters>
 
 	<schedule default="sleep">
 		<scheduledSituation from="0" duration="7" id="sleep" isPermament="false"/>
 		<scheduledSituation from="17" duration="2" id="sleep" isPermament="false"/>
 	</schedule>
-	
+
 	<time normalSpeed="10" fasterSpeed="300">
 	</time>
 
@@ -19,19 +19,25 @@
 			<change what="concentration" value="0.2" />
 			<change what="happiness" value="0.1" />
 		</situation>
-		
-		<situation id="goToBeach" text="Wyjœcie na pla¿ê">
+
+		<situation id="goToBeach" text="WyjÅ›cie na plaÅ¼Ä™">
 			<change what="concentration" value="-0.2" />
 			<change what="walletStatus" value="-0.1" />
 			<change what="happiness" value="0.5" />
 		</situation>
-		
-		<situation id="goToLunapark" text="Wyjœcie na lunapark">
+
+		<situation id="goToLunapark" text="WyjÅ›cie na lunapark">
 			<change what="concentration" value="-0.3" />
 			<change what="walletStatus" value="-0.3" />
 			<change what="happiness" value="0.8" />
 		</situation>
-		
+
 	</situations>
-	
-	</root>
+
+	<plot>
+		<plotElement text="ChcÄ™ siÄ™ super bawiÄ‡ na wakacjach!">
+			<goal paramId="happiness" value="0.7" />
+		</plotElement>
+	</plot>
+
+</root>

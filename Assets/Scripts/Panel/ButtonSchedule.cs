@@ -1,56 +1,66 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ButtonSchedule : MonoBehaviour {
 
+	class ButtonAction {
+
+		public static ButtonAction Delete = new ButtonAction((ButtonSchedule b) => {
+				Game.Me.GameState.Schedule.AddSituation(b.MyHour, 1, null, false);
+			},
+			Color.green,
+			"Usuń"
+		);
+		public static ButtonAction Add = new ButtonAction((ButtonSchedule b) => {
+				Game.Me.OpenWindow().OpenChooseSituation(Game.Me.GameState.Situations, b.MyHour);
+			},
+			Color.green,
+			"Dodaj"
+		);
+		public static ButtonAction IsPermament = new ButtonAction((ButtonSchedule b) => {
+				Game.Me.OpenWindow().OpenText("Ta sytuacja jest permamentna, nie można jej usunąć.");
+			},
+			Color.gray,
+			"Usuń"
+		);
+	
+		public Action<ButtonSchedule> OnClickAction;
+		internal Color ButtonColor;
+		internal string ButtonText;
+
+		public ButtonAction(Action<ButtonSchedule> p, Color buttonColor, string buttonText) {
+			OnClickAction = p;
+			ButtonColor = buttonColor;
+			ButtonText = buttonText;
+		}
+	}
+
 	private Situation Ss;
-	private Situation ProposedSituation;
 	private PanelSchedule PanelSchedule;
 	private bool IsPermament;
 	private int MyHour;
+	private ButtonAction ActionType;
 
 	private void RefreshMe() {
-		GetComponentInChildren<Text>().text = "";
-		GetComponent<Button>().enabled = Ss != null || ProposedSituation != null;
-		if (Ss != null) {
-			GetComponentInChildren<Text>().text = Ss.Text;
-		} else if (ProposedSituation != null) {
-			GetComponentInChildren<Text>().text = "Wstaw tutaj " + ProposedSituation.Text;
-		}
+		ActionType = Ss != null ? (IsPermament ? ButtonAction.IsPermament : ButtonAction.Delete) : ButtonAction.Add;
+		GetComponent<Image>().color = IsPermament ? Color.red : Color.white;
+		gameObject.FindByName<Text>("TextHour").text = MyHour.ToString();
+		gameObject.FindByName<Text>("TextName").text = Ss != null ? Ss.Text : "";
+		//button action
+		gameObject.FindByName<Text>("TextButtonAction").text = ActionType.ButtonText;
+		gameObject.FindByName<Image>("ButtonAction").color = ActionType.ButtonColor;
 	}
 
 	internal void Init(Situation s, bool isPermament, PanelSchedule panelSchedule, int myHour) {
 		MyHour = myHour;
-		ProposedSituation = null;
 		Ss = s;
 		IsPermament = isPermament;
 		PanelSchedule = panelSchedule;
 		RefreshMe();
-		GetComponent<Image>().color = IsPermament ? Color.red : Color.white;
 	}
 
-	internal void PropositionWasSelected(Situation proposed) {
-		ProposedSituation = proposed;
-		RefreshMe();
-	}
-
-	public void Clicked() {
-		if (IsPermament) {
-			return;
-		}
-		if (Ss != null) {
-			Ss = null;
-			PanelSchedule.ScheduleUpdated(MyHour, Ss);
-		}
-		if (ProposedSituation != null && Ss == null) {
-			Ss = ProposedSituation;
-			PanelSchedule.ScheduleUpdated(MyHour, Ss);
-		}
-		PanelSchedule.UnselectProposed();
-	}
-
-	internal void UnselectProposed() {
-		ProposedSituation = null;
-		RefreshMe();
+	public void ButtonActionClicked() {
+		ActionType.OnClickAction(this);
 	}
 }
