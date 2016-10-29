@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
-public class PanelCenter : MonoBehaviour, Schedule.ScheduleUpdateListener {
+public class PanelCenter : MonoBehaviour, GameTimeChangeListener {
 
-	public Transform SchedulePeak;
 	public PanelSituation PanelSituation;
 	public CenterPanelParameters PanelParameters;
+	public PanelSmallClock PanelSmallClock;
 
 	private int? LastHourOfDay;
 	public Situation ActualSituation;
@@ -15,7 +12,7 @@ public class PanelCenter : MonoBehaviour, Schedule.ScheduleUpdateListener {
 
 	void Update() {
 		if (GameState != null) {
-			int hour = Game.Me.GameState.HourOfDay;
+			int hour = (int)Game.Me.GameState.HourOfDay;
 			if (LastHourOfDay != hour) {
 				HourHasChanged(hour);
 				LastHourOfDay = hour;
@@ -23,34 +20,19 @@ public class PanelCenter : MonoBehaviour, Schedule.ScheduleUpdateListener {
 		}
 	}
 
-	internal void UpdateSchedule() {
-		int i = 0;
-		foreach (Transform scheduleHour in SchedulePeak) {
-			ScheduledSituation s = GameState.Schedule.getSituationForHour(i);
-			scheduleHour.GetComponentInChildren<Text>().text = s != null ? s.Situation.Text : "";
-			i++;
-		}
-	}
-
 	internal void HourHasChanged(int newHour) {
-		ScheduledSituation ss = GameState.Schedule.getSituationForHour(newHour);
-		Situation s = null;
-		if (ss == null) {
-			s = GameState.Schedule.DefaultSituation;
-		} else {
-			s = ss.Situation;
-		}
-		GameState.ActualSituation = new ScheduledSituation(GameState.HourOfDay, 1, s, false);
-		PanelSituation.HourHasChanged(newHour, s, GameState);
+		ScheduledSituation ss = GameState.Schedule.GetSituationForHour(newHour);
+		GameState.ActualSituation = new ScheduledSituation((int)GameState.HourOfDay, 1, ss.Situation, false);
+		PanelSituation.HourHasChanged(newHour, ss.Situation, GameState);
 	}
 
 	internal void Init(GameState gameState) {
 		GameState = gameState;
 		PanelParameters.Init(gameState.Parameters);
-		UpdateSchedule();
+		PanelSmallClock.Init(gameState.Schedule);
 	}
 
-	public void ScheduleUpdated(List<ScheduledSituation> situations) {
-		UpdateSchedule();
+	public void GameTimeUpdated(float hourOfDay) {
+		PanelSmallClock.GameTimeUpdated(hourOfDay);
 	}
 }

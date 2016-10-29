@@ -10,7 +10,7 @@
 		<param id="happiness" text="Szczęście" startValue="0.5" maxValue="10" isMain="true"/>
 	</parameters>
 
-	<schedule default="house">
+	<schedule>
 		<scheduledSituation from="0" duration="7" id="sleep" isPermament="false"/>
 		<scheduledSituation from="7" duration="1" id="shopping" isPermament="false"/>
 		<scheduledSituation from="8" duration="4" id="work" isPermament="true"/>

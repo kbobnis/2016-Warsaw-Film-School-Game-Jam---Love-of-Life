@@ -18,30 +18,35 @@ public class GameState {
 	public delegate void IsNewDay(int newDayNumber);
 	public event IsNewDay IsNewDayEvent;
 
+	public List<GameTimeChangeListener> GameTimeChangeListeners = new List<GameTimeChangeListener>();
+
 	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule scheduledSituations, Model model, Plot plot) {
 		Situations = situations;
 		ActualGameSpeed = model.TimeChanges.NormalSpeed;
 		Model = model;
 		Schedule = scheduledSituations;
-		ActualSituation = scheduledSituations.getSituationForHour(0, true);
+		ActualSituation = scheduledSituations.GetSituationForHour(0);
 		Parameters = parameters;
 		Plot = plot;
 		SetPlotElement(plot.Elements[0]);
 	}
 
-	public int HourOfDay {
+	public float HourOfDay {
 		get {
-			return (int)GameTime % 24;
+			return GameTime % 24f;
 		}
 	}
 
 	internal void Update(float deltaTime) {
 		if (!GameHasEnded) {
-			int hourOfDay = HourOfDay;
+			float hourOfDay = HourOfDay;
 			int oldDayNumber = DayNumber;
 
 			float timeDelta = deltaTime / 60f * ActualGameSpeed;
 			GameTime += timeDelta;
+			foreach(GameTimeChangeListener l in GameTimeChangeListeners) {
+				l.GameTimeUpdated(hourOfDay);
+			}
 			UpdateParameters(timeDelta);
 
 			//if new day
@@ -101,4 +106,8 @@ public class GameState {
 			p.UpdateValuesFromPreviousLoop();
 		}
 	}
+}
+
+public interface GameTimeChangeListener {
+	void GameTimeUpdated(float hourOfDay);
 }

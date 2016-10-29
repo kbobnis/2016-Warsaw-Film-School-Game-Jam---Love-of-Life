@@ -3,19 +3,10 @@ using System.Collections.Generic;
 
 public class Schedule {
 
-	public readonly Situation DefaultSituation;
 	public List<ScheduledSituation> Situations = new List<ScheduledSituation>();
 	public List<ScheduleUpdateListener> ScheduleUpdateListeners = new List<ScheduleUpdateListener>();
 
-	public Schedule(Situation defaultSituation) {
-		DefaultSituation = defaultSituation;
-	}
-
 	internal void AddSituation(int from, int duration, Situation situation, bool permament, bool @override=false) {
-		if (situation == null) {
-			RemoveSituation(from);
-			return;
-		}
 
 		//if duration bigger than 1 then cut it to pieces;
 		if (duration < 1) {
@@ -45,20 +36,6 @@ public class Schedule {
 		ScheduleUpdated();
 	}
 
-	private void RemoveSituation(int from) {
-		ScheduledSituation tmp = null;
-		foreach(ScheduledSituation ss in Situations) {
-			if (ss.From == from) {
-				tmp = ss;
-			}
-		}
-
-		if (tmp != null) {
-			Situations.Remove(tmp);
-		}
-		ScheduleUpdated();
-	}
-
 	private bool AreOverlapping(ScheduledSituation ssTmp, ScheduledSituation ss) {
 		ScheduledSituation smaller = ssTmp.From < ss.From ? ssTmp : ss;
 		ScheduledSituation bigger = smaller == ssTmp ? ss : ssTmp;
@@ -69,9 +46,9 @@ public class Schedule {
 		return finish > bigger.From;
 	}
 
-	internal ScheduledSituation getSituationForHour(int hour, bool includeDefault=false) {
+	internal ScheduledSituation GetSituationForHour(int hour) {
 		if (hour > 23) {
-			throw new Exception("There is no more hours in doba, but you gave: " + hour);
+			throw new Exception("There is no more hours in day, but you gave: " + hour);
 		}
 
 		foreach(ScheduledSituation ss in Situations) {
@@ -79,7 +56,7 @@ public class Schedule {
 				return ss;
 			}
 		}
-		return includeDefault?new ScheduledSituation(hour, 1, DefaultSituation, false):null;
+		throw new Exception("There has to be always a situation everywhere, check hour: " + hour);
 	}
 
 	internal void AddScheduleUpdateSituation(ScheduleUpdateListener listener) {
@@ -96,7 +73,7 @@ public class Schedule {
 
 	public void ScheduleUpdated() {
 		foreach(ScheduleUpdateListener listener in ScheduleUpdateListeners) {
-			listener.ScheduleUpdated(Situations);
+			listener.ScheduleUpdated(this);
 		}
 	}
 
@@ -105,6 +82,6 @@ public class Schedule {
 	}
 
 	public interface ScheduleUpdateListener {
-		void ScheduleUpdated(List<ScheduledSituation> situations);
+		void ScheduleUpdated(Schedule s);
 	}
 }

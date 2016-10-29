@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class PanelWindow : MonoBehaviour{
 
-
-	internal void OpenChooseSituation(List<Situation> situations, int hour) {
+	internal void OpenChooseSituation(List<Situation> situations, int hour, Situation actualSituation) {
 		gameObject.FindByName<RectTransform>("ChooseSituationContent").gameObject.SetActive(true);
-		gameObject.FindByName<ChooseSituationContent>("ChooseSituationContent").Open(situations, hour, gameObject);
+		gameObject.FindByName<ChooseSituationContent>("ChooseSituationContent").Open(situations, hour, gameObject, actualSituation);
 	}
 
 	public void Cancel() {

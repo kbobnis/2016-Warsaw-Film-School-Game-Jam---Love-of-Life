@@ -10,7 +10,6 @@ public class Game : MonoBehaviour {
 
 	public static Game Me;
 
-	public PanelSchedule PanelSchedule;
 	public PanelCenter PanelCenter;
 	public PanelSelectModule PanelSelectModule;
 	public PanelEndGame PanelEndGame;
@@ -53,15 +52,13 @@ public class Game : MonoBehaviour {
 
 		List<Parameter> parameters = XmlLoader.LoadParameters(model);
 		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
-		Schedule schedule = XmlLoader.LoadSchedule(model.GetElementsByTagName("schedule")[0], situations);
+		Schedule schedule = XmlLoader.LoadSchedule(model.GetElementsByTagName("schedule")[0], situations, true);
 		XElement xElement = XElement.Parse(Resources.Load<TextAsset>(modelDir).text);
 		List<Plot.Element> plotElements = XmlLoader.LoadPlot(xElement.Elements().FirstOrDefault(t => t.Name == "plot"), parameters, situations);
 
 		GameState = new GameState(parameters, situations, schedule, new Model(moduleId, XmlLoader.LoadTime(model, parameters)), new Plot(plotElements));
-		GameState.Schedule.AddScheduleUpdateSituation(PanelSchedule);
-		GameState.Schedule.AddScheduleUpdateSituation(PanelCenter);
+		GameState.GameTimeChangeListeners.Add(PanelCenter);
 
-		PanelSchedule.Init(GameState);
 		PanelCenter.Init(GameState);
 		ChangePanel(typeof(PanelCenter));
 	}
@@ -78,18 +75,12 @@ public class Game : MonoBehaviour {
 	}
 
 	//this is used by button in GUI
-	public void ChangeToPanelSchedule() {
-		ChangePanel(typeof(PanelSchedule));
-	}
-
-	//this is used by button in GUI
 	public void ChangeToPanelCenter() {
 		ChangePanel(typeof(PanelCenter));
 	}
 
 	private void ChangePanel(Type type) {
 		PanelCenter.gameObject.SetActive(type == typeof(PanelCenter));
-		PanelSchedule.gameObject.SetActive(type == typeof(PanelSchedule));
 		PanelSelectModule.gameObject.SetActive(type == typeof(PanelSelectModule));
 		PanelEndGame.gameObject.SetActive(type == typeof(PanelEndGame));
 		PanelWindow.gameObject.SetActive(type == typeof(PanelWindow));

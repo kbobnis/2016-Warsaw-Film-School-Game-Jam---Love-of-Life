@@ -80,10 +80,10 @@ internal class XmlLoader {
 		foreach (XElement plotElementXml in plotXml.Elements()) {
 			string text = plotElementXml.Attribute("text").Value;
 			List<Plot.Element.Goal> plotGoals = LoadPlotGoals(plotElementXml.Elements("goal"), parameters);
-			Schedule scheduleOverride = plotElementXml.Element("schedule")!=null?LoadSchedule(ToXmlElement( plotElementXml.Element("schedule") ), situations):null;
+			Schedule scheduleOverride = plotElementXml.Element("schedule") != null ? LoadSchedule(ToXmlElement(plotElementXml.Element("schedule")), situations, false) : null;
 			plotElements.Add(new Plot.Element(text, plotGoals, scheduleOverride));
 		}
-		if (plotElements[plotElements.Count-1].Goals.Any(t => t is Plot.Element.DayNumberGoal)) {
+		if (plotElements[plotElements.Count - 1].Goals.Any(t => t is Plot.Element.DayNumberGoal)) {
 			throw new Exception("You can not have any day number goal (only ParameterValueGoal)  in the last plot element. Because of high scores.");
 		}
 		return plotElements;
@@ -120,16 +120,12 @@ internal class XmlLoader {
 		return goals;
 	}
 
-	internal static Schedule LoadSchedule(XmlNode scheduleXml, List<Situation> situations) {
+	internal static Schedule LoadSchedule(XmlNode scheduleXml, List<Situation> situations, bool fillAllDay) {
 		try {
-			Situation defaultSituation = null;
 			if (scheduleXml.Check("default")) {
-				defaultSituation = situations.FirstOrDefault(t => t.Id == scheduleXml.Attributes["default"].Value);
-				if (defaultSituation == null) {
-					throw new Exception("When loading default situation. There is no situaion with id " + scheduleXml.Attributes["default"].Value + ".");
-				}
+				throw new Exception("There is no default situation anymore, remove this and fill the schedule with situations.");
 			}
-			Schedule schedule = new Schedule(defaultSituation);
+			Schedule schedule = new Schedule();
 			foreach (XmlNode scheduledSituation in scheduleXml.ChildNodes) {
 				int from = int.Parse(scheduledSituation.Attributes["from"].Value);
 				int duration = int.Parse(scheduledSituation.Attributes["duration"].Value);
@@ -140,7 +136,15 @@ internal class XmlLoader {
 				}
 				Situation situation = situations.First(t => t.Id == situationId);
 				schedule.AddSituation(from, duration, situation, isPermament);
-
+			}
+			//we'll check if the schedule is fully filled
+			//the plot element can override schedule and it hasn't be fully filled
+			if (fillAllDay) {
+				for (int i = 0; i < 24; i++) {
+					if (schedule.GetSituationForHour(i) == null) {
+						throw new Exception("You haven't defined situation for hour " + i + ", add it.");
+					}
+				}
 			}
 			return schedule;
 		} catch (Exception e) {

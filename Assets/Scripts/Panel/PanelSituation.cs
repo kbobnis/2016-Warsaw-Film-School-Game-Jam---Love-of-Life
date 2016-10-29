@@ -9,8 +9,6 @@ public class PanelSituation : MonoBehaviour {
 	private GameState GameState;
 
 	internal void UpdateActiveSituation(Situation actualSituation, GameState gameState) {
-		GetComponentsInChildren<Text>()[0].text = "Dzień " + gameState.DayNumber + ", godzina " + gameState.HourOfDay;
-		GetComponentsInChildren<Text>()[1].text = "W tej chwili: \n\n" + actualSituation.Text;
 		gameObject.FindByName<Text>("QuestText").text = gameState.ActualPlotElement.GetInfo();
 
 		//show buttons on second panel
@@ -20,7 +18,7 @@ public class PanelSituation : MonoBehaviour {
 			button.gameObject.SetActive(i < actualSituation.Buttons.Count);
 			if (i < actualSituation.Buttons.Count) {
 				LOL.Button b = actualSituation.Buttons[i];
-				button.GetComponentInChildren<Text>().text = b.Text + "\n\nKoszt: " + b.Changes.Where(change => change.ValueCalculation != null && change.ValueCalculation.Calculate() < 0).Select(change => change.What.Text + " " + change.ValueCalculation.Calculate().ToString("0.0")).Aggregate((t, y) => t + ", " + y);
+				button.GetComponentInChildren<Text>().text = b.Text;// + "\n\nKoszt: " + b.Changes.Where(change => change.ValueCalculation != null && change.ValueCalculation.Calculate() < 0).Select(change => change.What.Text + " " + change.ValueCalculation.Calculate().ToString("0.0")).Aggregate((t, y) => t + ", " + y);
 				button.GetComponent<Button>().onClick.RemoveAllListeners();
 				button.GetComponent<Button>().onClick.AddListener(() => {
 					foreach (Change c in b.Changes) {
