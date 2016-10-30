@@ -39,7 +39,7 @@ public class Calculation {
 		}
 	}
 
-	internal float Calculate(float? timeDelta = null) {
+	internal float Calculate(bool isRightType, float? timeDelta = null) {
 
 		int i = 0;
 		float res = Elements[i].GetValue();
@@ -53,7 +53,7 @@ public class Calculation {
 			i += 2;
 		}
 		//add pairs
-		return res * (timeDelta != null ? timeDelta.Value : 1);
+		return res * (timeDelta != null ? timeDelta.Value : 1) * (isRightType?1:0.5f);
 	}
 
 	class ElementNumber : Element {
@@ -129,7 +129,6 @@ public class Calculation {
 			return Function.GetValue(Parameter);
 		}
 
-
 		abstract class FunctionClass {
 			public static FunctionClass GetOneFunction = new GetOneFunction();
 			public static FunctionClass MaxValueFunction = new MaxValueFunction();
@@ -145,7 +144,7 @@ public class Calculation {
 
 		class MaxValueFunction : FunctionClass {
 			public override float GetValue(Parameter p) {
-				return p.MaxValue.Calculate() * p.ActualMaxValueMultiplier;
+				return p.MaxValue.Calculate(true) * p.ActualMaxValueMultiplier;
 			}
 		}
 	}

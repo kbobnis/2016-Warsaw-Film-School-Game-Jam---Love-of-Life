@@ -15,23 +15,23 @@
 	internal bool CanUpdateWithoutOverflow(Change c, float? timeDelta = null) {
 		bool canIt = true;
 		if (c.ValueCalculation != null) {
-			canIt = c.What.ActualValue + c.ValueCalculation.Calculate(timeDelta) >= 0;
+			canIt = c.What.ActualValue + c.ValueCalculation.Calculate(true, timeDelta) >= 0; //max value is always calculated depending as the right type
 		}
 		return canIt;
 	}
 
-	public void UpdateParams(float? timeDelta = null) {
+	public void UpdateParams(bool isRightType, float? timeDelta = null) {
 
 		What.UpdateValuesFromPreviousLoop();
 		if (MaxValueCalculation != null) {
-			What.PreviousLoopMaxValueDelta += MaxValueCalculation.Calculate(timeDelta);
+			What.PreviousLoopMaxValueDelta += MaxValueCalculation.Calculate(isRightType, timeDelta);
 		}
 
 		if (ValueCalculation != null) {
-			What.PreviousLoopValueDelta += ValueCalculation.Calculate(timeDelta);
+			What.PreviousLoopValueDelta += ValueCalculation.Calculate(isRightType, timeDelta);
 		}
 
-		What.DragDown();
+		What.DragDown(isRightType);
 	}
 
 	public override string ToString() {

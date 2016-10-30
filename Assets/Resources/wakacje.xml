@@ -5,26 +5,24 @@
 		<param id="happiness" text="Szczęście" startValue="0.5" maxValue="10" isMain="true"/>
 	</parameters>
 
-	<schedule >
+	<schedule nightTimeFrom="22" nightTimeDuration="11">
 		<scheduledSituation from="0" duration="24" id="sleep" isPermament="false"/>
-		
 	</schedule>
 
 	<time normalSpeed="10" fasterSpeed="300">
 	</time>
 
 	<situations>
-
-		<situation id="sleep" text="Sen">
+		<situation id="sleep" text="Sen" type="night">
 			<change what="concentration" value="0.2" />
 			<change what="happiness" value="0.1" />
 		</situation>
-		<situation id="goToBeach" text="Wyjście na plażę">
+		<situation id="goToBeach" text="Wyjście na plażę" type="day">
 			<change what="concentration" value="-0.2" />
 			<change what="walletStatus" value="-0.1" />
 			<change what="happiness" value="0.5" />
 		</situation>
-		<situation id="goToLunapark" text="Wyjście na lunapark">
+		<situation id="goToLunapark" text="Wyjście na lunapark" type="day">
 			<change what="concentration" value="-0.3" />
 			<change what="walletStatus" value="-0.3" />
 			<change what="happiness" value="0.8" />

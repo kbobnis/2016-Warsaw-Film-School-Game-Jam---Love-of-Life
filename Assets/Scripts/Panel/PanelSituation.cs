@@ -22,7 +22,8 @@ public class PanelSituation : MonoBehaviour {
 				button.GetComponent<Button>().onClick.RemoveAllListeners();
 				button.GetComponent<Button>().onClick.AddListener(() => {
 					foreach (Change c in b.Changes) {
-						c.UpdateParams();
+						bool isRightType = actualSituation.DayNightType.IsRightType( gameState.Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay) );
+						c.UpdateParams(isRightType);
 					}
 
 					foreach(Parameter p in gameState.Parameters) {

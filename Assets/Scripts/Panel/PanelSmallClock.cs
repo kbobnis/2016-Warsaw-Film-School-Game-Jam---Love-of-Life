@@ -20,9 +20,9 @@ public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 		ScheduledSituation ss = Game.Me.GameState.Schedule.GetSituationForHour(hourOfDay);
 		Transform situationsTrans = gameObject.FindByName<Transform>("Situations");
 		int index = 0;
+		bool isRightType = ss.Situation.DayNightType == Game.Me.GameState.Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay);
 		foreach (Transform childT in situationsTrans) {
-			childT.gameObject.FindByName<Image>("WhiteBackground").enabled = index == hourOfDay || childT.GetComponent<ButtonSchedule>().IsPermament;
-			childT.GetComponentInChildren<Text>().color = index == hourOfDay ? Color.black : Color.white;
+			childT.gameObject.FindByName<Transform>("Highlight").gameObject.SetActive(index == hourOfDay);
 			index++;
 		}
 	}
@@ -30,14 +30,29 @@ public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 	private void Refresh(Schedule schedule) {
 		Transform situationsTrans = gameObject.FindByName<Transform>("Situations");
 		int index = 0;
+		//setup the situations
 		foreach (Transform childT in situationsTrans) {
 			ScheduledSituation ss = schedule.GetSituationForHour(index);
+			bool isRightType = ss.Situation.DayNightType == schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay);
 			childT.gameObject.GetComponent<ButtonSchedule>().Init(ss.Situation, ss.Permament, index);
-			childT.gameObject.FindByName<Image>("WhiteBackground").color = ss.Permament ? Color.red : Color.white;
-			childT.gameObject.FindByName<Image>("WhiteBackground").enabled = ss.Permament;
 			childT.GetComponentInChildren<Text>().text = ss.Situation.Text;
+			childT.gameObject.FindByName<Image>("RightWrongType").color = ss.Situation.DayNightType.Color;
 			index++;
 		}
+
+		//set the night arc
+		Transform nightArc = gameObject.FindByName<Transform>("ImageNight");
+		float startAngle = - schedule.NightTimeFrom.Value / 24f * 360;
+		nightArc.localRotation = Quaternion.AngleAxis(startAngle, new Vector3(0, 0, 1));
+		float fillAmount = schedule.NightTimeDuration.Value / 24f;
+		nightArc.gameObject.GetComponent<Image>().fillAmount = fillAmount;
+
+		//set the day arc
+		Transform dayArc = gameObject.FindByName<Transform>("ImageDay");
+		float dayStartAngle = - (schedule.NightTimeFrom.Value / 24f + fillAmount) * 360;
+		dayArc.localRotation = Quaternion.AngleAxis(dayStartAngle, new Vector3(0, 0, 1));
+		float dayFillAmount = 1 - fillAmount;
+		dayArc.gameObject.GetComponent<Image>().fillAmount = dayFillAmount;
 	}
 
 	internal void Init(Schedule schedule) {
@@ -48,7 +63,6 @@ public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 			ScheduledSituation ss = schedule.GetSituationForHour(index);
 			float angle = -index / 24f * 360 + 81.57f; //81.57 is the offset. this should be the first elements angle
 			childT.localRotation = Quaternion.AngleAxis(angle, new Vector3(0, 0, 1));
-			childT.gameObject.FindByName<Image>("WhiteBackground").enabled = false;
 			index++;
 		}
 		Refresh(schedule);

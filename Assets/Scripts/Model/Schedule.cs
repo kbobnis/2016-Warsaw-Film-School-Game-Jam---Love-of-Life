@@ -5,6 +5,13 @@ public class Schedule {
 
 	public List<ScheduledSituation> Situations = new List<ScheduledSituation>();
 	public List<ScheduleUpdateListener> ScheduleUpdateListeners = new List<ScheduleUpdateListener>();
+	public int? NightTimeFrom;
+	public int? NightTimeDuration;
+
+	public Schedule(int? nightTimeFrom, int? nightTimeDuration) {
+		NightTimeFrom = nightTimeFrom;
+		NightTimeDuration = nightTimeDuration;
+	}
 
 	internal void AddSituation(int from, int duration, Situation situation, bool permament, bool @override=false) {
 
@@ -69,12 +76,23 @@ public class Schedule {
 				AddSituation(ss.From, ss.Duration, ss.Situation, ss.Permament, true);
 			}
 		}
+		if (scheduleOverride.NightTimeFrom != null) {
+			NightTimeFrom = scheduleOverride.NightTimeFrom;
+		}
+		if (scheduleOverride.NightTimeDuration != null) {
+			NightTimeDuration = scheduleOverride.NightTimeDuration;
+		}
+
 	}
 
 	public void ScheduleUpdated() {
 		foreach(ScheduleUpdateListener listener in ScheduleUpdateListeners) {
 			listener.ScheduleUpdated(this);
 		}
+	}
+
+	internal Situation.Type GetActualDayNightType(int hourOfDay) {
+		return (hourOfDay > NightTimeFrom || hourOfDay < (NightTimeFrom + NightTimeDuration) % 24) ? Situation.Type.Night : Situation.Type.Day;
 	}
 
 	internal void Update(int hour, Situation ss) {

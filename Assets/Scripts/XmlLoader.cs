@@ -25,12 +25,12 @@ internal class XmlLoader {
 			string id = parameterXml.Attributes["id"].Value;
 
 			if (!parameterXml.Check("maxValue")) {
-				throw new Exception("You have to pass max value to parameter: " + id);
+				throw new LoaderException("You have to pass max value to parameter: " + id);
 			}
 			//Calculation maxValue = Calculation.from parameterXml.Attributes["maxValue"].Value
 			float startValue = parameterXml.Check("startValue") ? float.Parse(parameterXml.Attributes["startValue"].Value) : 0;
 			if (!parameterXml.Check("text")) {
-				throw new Exception("There is no text in parameter " + id);
+				throw new LoaderException("There is no text in parameter " + id);
 			}
 			bool isMain = parameterXml.Check("isMain") ? parameterXml.Attributes["isMain"].Value == "true" : false;
 			string text = parameterXml.Attributes["text"].Value;
@@ -56,14 +56,14 @@ internal class XmlLoader {
 					foreach (Parameter p in parameters) {
 						if (p.Id == pTmp) {
 							if (p.IsMain) {
-								throw new Exception(p.Text + " is main parameter already. It will be dragged down if under zero.");
+								throw new LoaderException(p.Text + " is main parameter already. It will be dragged down if under zero.");
 							}
 							dragDownIfZero.Add(p);
 							found = true;
 						}
 					}
 					if (!found) {
-						throw new Exception("DragDownIfZero has parameter (" + pTmp + ") but there is no such parameter.");
+						throw new LoaderException("DragDownIfZero has parameter (" + pTmp + ") but there is no such parameter.");
 					}
 				}
 			}
@@ -74,7 +74,7 @@ internal class XmlLoader {
 
 	internal static List<Plot.Element> LoadPlot(XElement plotXml, List<Parameter> parameters, List<Situation> situations) {
 		if (plotXml == null) {
-			throw new Exception("A story must have at least one plot element.");
+			throw new LoaderException("A story must have at least one plot element.");
 		}
 		List<Plot.Element> plotElements = new List<Plot.Element>();
 		foreach (XElement plotElementXml in plotXml.Elements()) {
@@ -84,7 +84,7 @@ internal class XmlLoader {
 			plotElements.Add(new Plot.Element(text, plotGoals, scheduleOverride));
 		}
 		if (plotElements[plotElements.Count - 1].Goals.Any(t => t is Plot.Element.DayNumberGoal)) {
-			throw new Exception("You can not have any day number goal (only ParameterValueGoal)  in the last plot element. Because of high scores.");
+			throw new LoaderException("You can not have any day number goal (only ParameterValueGoal)  in the last plot element. Because of high scores.");
 		}
 		return plotElements;
 	}
@@ -99,7 +99,7 @@ internal class XmlLoader {
 		List<Plot.Element.Goal> goals = new List<Plot.Element.Goal>();
 		foreach (XElement goalXml in plotGoals) {
 			if (goalXml.Name != "goal") {
-				throw new Exception("There is something wrong with plot goal, it has wrong name: " + goalXml.Name);
+				throw new LoaderException("There is something wrong with plot goal, it has wrong name: " + goalXml.Name);
 			}
 			//its paramId or dayNumber
 			if (goalXml.Attribute("dayNumber") != null) {
@@ -109,12 +109,12 @@ internal class XmlLoader {
 				string id = goalXml.Attribute("paramId").Value;
 				Parameter p = parameters.FirstOrDefault(t => t.Id == id);
 				if (p == null) {
-					throw new Exception("There is no parameter with id: " + id);
+					throw new LoaderException("There is no parameter with id: " + id);
 				}
 				float desiredValue = float.Parse(goalXml.Attribute("value").Value);
 				goals.Add(new Plot.Element.ParameterValueGoal(p, desiredValue));
 			} else {
-				throw new Exception("You must define dayNumber or paramId.");
+				throw new LoaderException("You must define dayNumber or paramId.");
 			}
 		}
 		return goals;
@@ -123,16 +123,29 @@ internal class XmlLoader {
 	internal static Schedule LoadSchedule(XmlNode scheduleXml, List<Situation> situations, bool fillAllDay) {
 		try {
 			if (scheduleXml.Check("default")) {
-				throw new Exception("There is no default situation anymore, remove this and fill the schedule with situations.");
+				throw new LoaderException("There is no default situation anymore, remove this and fill the schedule with situations.");
 			}
-			Schedule schedule = new Schedule();
+			int? nightTimeFrom = null;
+			int? nightTimeDuration = null;
+			if (fillAllDay) {
+				if (!scheduleXml.Check("nightTimeFrom")) {
+					throw new LoaderException("NightTimeFrom has to be defined.");
+				}
+				nightTimeFrom = int.Parse(scheduleXml.Attributes["nightTimeFrom"].Value);
+				if (!scheduleXml.Check("nightTimeDuration")) {
+					throw new LoaderException("nightTimeDuration has to be defined.");
+				}
+				 nightTimeDuration= int.Parse(scheduleXml.Attributes["nightTimeDuration"].Value);
+			}
+
+			Schedule schedule = new Schedule(nightTimeFrom, nightTimeDuration);
 			foreach (XmlNode scheduledSituation in scheduleXml.ChildNodes) {
 				int from = int.Parse(scheduledSituation.Attributes["from"].Value);
 				int duration = int.Parse(scheduledSituation.Attributes["duration"].Value);
 				bool isPermament = scheduledSituation.Check("isPermament") ? scheduledSituation.Attributes["isPermament"].Value == "true" : false;
 				string situationId = scheduledSituation.Attributes["id"].Value;
 				if (!situations.Any(t => t.Id == situationId)) {
-					throw new Exception("There is no situation with id: " + situationId);
+					throw new LoaderException("There is no situation with id: " + situationId);
 				}
 				Situation situation = situations.First(t => t.Id == situationId);
 				schedule.AddSituation(from, duration, situation, isPermament);
@@ -142,13 +155,13 @@ internal class XmlLoader {
 			if (fillAllDay) {
 				for (int i = 0; i < 24; i++) {
 					if (schedule.GetSituationForHour(i) == null) {
-						throw new Exception("You haven't defined situation for hour " + i + ", add it.");
+						throw new LoaderException("You haven't defined situation for hour " + i + ", add it.");
 					}
 				}
 			}
 			return schedule;
-		} catch (Exception e) {
-			throw new Exception("When loading schedule: " + e.Message);
+		} catch (LoaderException e) {
+			throw new LoaderException("When loading schedule: " + e.Message);
 		}
 	}
 
@@ -156,11 +169,11 @@ internal class XmlLoader {
 		XmlNode timeXml = model.GetElementsByTagName("time")[0];
 		try {
 			if (!timeXml.Check("normalSpeed")) {
-				throw new Exception("There is no normalSpeed defined.");
+				throw new LoaderException("There is no normalSpeed defined.");
 			}
 			float normalSpeed = float.Parse(timeXml.Attributes["normalSpeed"].Value);
 			if (!timeXml.Check("fasterSpeed")) {
-				throw new Exception("There is no fasterSpeed defined.");
+				throw new LoaderException("There is no fasterSpeed defined.");
 			}
 			float fasterSpeed = float.Parse(timeXml.Attributes["fasterSpeed"].Value);
 
@@ -169,9 +182,8 @@ internal class XmlLoader {
 			return new TimeChanges(normalSpeed, fasterSpeed, timeChanges);
 
 		} catch (Exception e) {
-			throw new Exception("When loading time: " + e.Message);
+			throw new LoaderException("When loading time: " + e.Message);
 		}
-
 	}
 
 	internal static List<Situation> LoadSituations(XmlDocument model, List<Parameter> parameters) {
@@ -181,15 +193,20 @@ internal class XmlLoader {
 			string id = situationXml.Attributes["id"].Value;
 			try {
 				if (!situationXml.Check("text")) {
-					throw new Exception("There is no text attribute.");
+					throw new LoaderException("There is no text attribute.");
 				}
+				if (!situationXml.Check("type")) {
+					throw new LoaderException("All situations must define their type: either day or night.");
+				}
+				Situation.Type type = Situation.Type.FromString(situationXml.Attributes["type"].Value);
+
 				string text = situationXml.Attributes["text"].Value;
 				bool selectable = situationXml.Check("selectable") ? (situationXml.Attributes["selectable"].Value == "false" ? false : true) : true;
 				List<Change> changes = LoadChanges(situationXml, parameters);
 				List<Button> buttons = LoadButtons(situationXml, parameters);
-				situations.Add(new Situation(id, text, changes, selectable, buttons));
-			} catch (Exception e) {
-				throw new Exception("Exception in situation " + id + ", " + e.Message);
+				situations.Add(new Situation(id, text, changes, selectable, buttons, type));
+			} catch (LoaderException e) {
+				throw new LoaderException("Exception in situation " + id + ", " + e.Message);
 			}
 		}
 		return situations;
@@ -205,15 +222,15 @@ internal class XmlLoader {
 						changes.Add(LoadChange(changeXml, parameters));
 					}
 					if (!buttonXml.Check("text")) {
-						throw new Exception("Button must have text attribute");
+						throw new LoaderException("Button must have text attribute");
 					}
 					string text = buttonXml.Attributes["text"].Value;
 
 					buttons.Add(new Button(text, changes));
 				}
 			}
-		} catch (Exception e) {
-			throw new Exception("Exception when loading button. " + e.Message);
+		} catch (LoaderException e) {
+			throw new LoaderException("Exception when loading button. " + e.Message);
 		}
 		return buttons;
 	}
@@ -226,27 +243,27 @@ internal class XmlLoader {
 					changes.Add(LoadChange(changeXml, parameters));
 				}
 			}
-		} catch (Exception e) {
-			throw new Exception("Exception when loading change. " + e.Message);
+		} catch (LoaderException e) {
+			throw new LoaderException("Exception when loading change. " + e.Message);
 		}
 		return changes;
 	}
 
 	private static Change LoadChange(XmlNode changeXml, List<Parameter> parameters) {
 		if (changeXml.Name != "change") {
-			throw new Exception("That is not a change: " + changeXml.Name + ". " + changeXml.InnerXml);
+			throw new LoaderException("That is not a change: " + changeXml.Name + ". " + changeXml.InnerXml);
 		}
 		if (!changeXml.Check("what")) {
-			throw new Exception("There is no 'what' attribute.");
+			throw new LoaderException("There is no 'what' attribute.");
 		}
 		Parameter what = parameters.FirstOrDefault(t => t.Id == changeXml.Attributes["what"].Value);
 		if (what == null) {
-			throw new Exception("There is no parameter with id: " + changeXml.Attributes["what"].Value);
+			throw new LoaderException("There is no parameter with id: " + changeXml.Attributes["what"].Value);
 		}
 		Calculation valueCalculation = changeXml.Check("value") ? new Calculation(changeXml.Attributes["value"].Value, parameters) : null;
 		Calculation maxValueCalculation = changeXml.Check("maxValue") ? new Calculation(changeXml.Attributes["maxValue"].Value, parameters) : null;
 		if (valueCalculation != null && maxValueCalculation != null) {
-			throw new Exception("You can only set one calculation, but you have set two. value and maxValue.");
+			throw new LoaderException("You can only set one calculation, but you have set two. value and maxValue.");
 		}
 		float perTime = 1f;
 		if (changeXml.Check("per")) {
@@ -264,4 +281,9 @@ public static class XmlNodeExtensions {
 		return s.Attributes[attribute] != null;
 	}
 
+}
+
+public class LoaderException : Exception {
+	public LoaderException(string message) : base(message) {
+	}
 }

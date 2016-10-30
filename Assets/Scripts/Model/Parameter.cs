@@ -32,7 +32,7 @@ public class Parameter {
 	}
 
 	public override string ToString() {
-		return Id + " " + ActualValue + "/" + (MaxValue.Calculate() * ActualMaxValueMultiplier) + ", startValue: " + StartValue;
+		return Id + " " + ActualValue + "/" + (MaxValue.Calculate(true) * ActualMaxValueMultiplier) + ", startValue: " + StartValue;
 	}
 
 	internal bool HasMaxValue() {
@@ -46,9 +46,9 @@ public class Parameter {
 		PreviousLoopValueDelta = 0;
 	}
 
-	public void DragDown() {
-		if (MaxValue != null && ActualValue > MaxValue.Calculate() * ActualMaxValueMultiplier) {
-			ActualValue = MaxValue.Calculate() * ActualMaxValueMultiplier;
+	public void DragDown(bool isRightType) {
+		if (MaxValue != null && ActualValue > MaxValue.Calculate(true) * ActualMaxValueMultiplier) { //max value is always the right type
+			ActualValue = MaxValue.Calculate(isRightType) * ActualMaxValueMultiplier;
 		}
 
 		if (ActualValue < 0f && !IsMain) { //if this is main, then this is already over
@@ -56,7 +56,7 @@ public class Parameter {
 				float howMuch = -ActualValue / DragDownIfZero.Count;
 				IsDraggingDown = true;
 				foreach (Parameter p in DragDownIfZero) {
-					p.DropValue(howMuch, this);
+					p.DropValue(howMuch, this, isRightType);
 				}
 			}
 			ActualValue = 0f;
@@ -69,10 +69,10 @@ public class Parameter {
 		}
 	}
 
-	private void DropValue(float howMuch, Parameter parameter) {
+	private void DropValue(float howMuch, Parameter parameter, bool isRightType) {
 		ActualValue -= howMuch * parameter.DragDownIfZeroPenalty;
 		IsDraggedDownBy.Add(parameter);
-		DragDown();
+		DragDown(isRightType);
 	}
 
 	internal void AddDragIfZeroAndMaxValue(List<Parameter> dragDownIfZero, Calculation maxValue) {

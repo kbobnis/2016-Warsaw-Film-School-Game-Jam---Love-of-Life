@@ -90,15 +90,16 @@ public class GameState {
 			p.IsDraggedDownBy.Clear();
 			p.IsDraggingDown = false;
 		}
+		bool isRightType = ActualSituation.Situation.DayNightType.IsRightType( Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay) );
 
 		//actual situation changes
 		foreach (Change change in ActualSituation.Situation.Changes) {
-			change.UpdateParams(timeDelta);
+			change.UpdateParams(isRightType, timeDelta);
 		}
 
 		//all time changes
 		foreach (Change change in Model.TimeChanges.Changes) {
-			change.UpdateParams(timeDelta);
+			change.UpdateParams(true, timeDelta); //time changes don't change during the day
 		}
 
 		//update all params 
