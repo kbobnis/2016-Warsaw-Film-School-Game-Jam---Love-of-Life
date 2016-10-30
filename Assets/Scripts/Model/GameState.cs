@@ -20,12 +20,12 @@ public class GameState {
 
 	public List<GameTimeChangeListener> GameTimeChangeListeners = new List<GameTimeChangeListener>();
 
-	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule scheduledSituations, Model model, Plot plot) {
+	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule schedule, Model model, Plot plot) {
 		Situations = situations;
 		ActualGameSpeed = model.TimeChanges.NormalSpeed;
 		Model = model;
-		Schedule = scheduledSituations;
-		ActualSituation = scheduledSituations.GetSituationForHour(0);
+		Schedule = schedule;
+		ActualSituation = schedule.GetSituationForHour(0);
 		Parameters = parameters;
 		Plot = plot;
 		SetPlotElement(plot.Elements[0]);

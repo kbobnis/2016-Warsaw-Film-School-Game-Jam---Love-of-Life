@@ -1,0 +1,55 @@
+<root>
+	<parameters dragDownIfZeroPenalty="2">
+		<param id="energy" text="Energia życiowa" startValue="0.5" maxValue="1" isMain="true" />
+		<param id="food" text="Jedzenie" startValue="0.5" maxValue="1" />
+		<param id="distance" text="Pokonana odległość" startValue="0" maxValue="100" />
+		<param id="safety" text="Bezpieczeństwo" startValue="0.5" maxValue="1" />
+	</parameters>
+
+	<schedule nightTimeFrom="18" nightTimeDuration="12">
+		<scheduledSituation from="0" duration="6" id="sleepWithGuard" isPermament="false"/>
+		<scheduledSituation from="6" duration="11" id="walk" isPermament="false"/>
+		<scheduledSituation from="17" duration="1" id="hunt" isPermament="false"/>
+		<scheduledSituation from="18" duration="6" id="sleepWithGuard" isPermament="false"/>
+	</schedule>
+	
+	<!-- functions maxValue- and getOne- -->
+	<time normalSpeed="10" fasterSpeed="300">
+		<change what="energy" value="-0.005" />
+		<change what="food" value="-0.01" />
+		<change what="safety" value="-0.02" />
+	</time>
+
+	<situations>
+		<situation id="walk" text="Podróż" type="day">
+			<change what="distance" value="1" />
+			<change what="energy" value="-0.01" />
+			<change what="food" value="-0.01" />
+		</situation>
+
+		<situation id="scout" text="Zwiad" type="day">
+			<change what="safety" value="0.3" />
+		</situation>
+
+		<situation id="sleep" text="Sen" type="night">
+			<change what="energy" value="0.03" />
+		</situation>
+
+		<situation id="sleepWithGuard" text="Sen z wartą" type="night">
+			<change what="energy" value="0.015" />
+			<change what="safety" value="0.02" />
+		</situation>
+		
+		<situation id="hunt" text="Polowanie" type="day">
+			<change what="food" value="0.2" />
+		</situation>
+	</situations>
+
+
+	<plot>
+		<plotElement text="Muszę przejść głęboko wgłąb terytorium wroga.">
+			<goal paramId="distance" value="100" />
+		</plotElement>
+	</plot>
+	
+</root>

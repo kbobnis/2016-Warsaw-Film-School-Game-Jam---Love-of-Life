@@ -15,16 +15,19 @@ public class Game : MonoBehaviour {
 	public PanelWindow PanelWindow;
 
 	public GameState GameState;
+	public float LastUpdate;
 
 	// Use this for initialization
 	void Awake () {
 		Screen.fullScreen = false;
 		Me = this;
+		gameObject.FindByName<Transform>("PanelMinigame").gameObject.SetActive(true);
 		ChangePanel(typeof(PanelSelectModule));
 	}
 
 	void Update () {
-		if (GameState != null) {
+		if (GameState != null ) {
+			LastUpdate = Time.time;
 			GameState.Update(Time.deltaTime);
 		}
 	}

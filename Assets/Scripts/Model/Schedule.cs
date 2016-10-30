@@ -75,14 +75,13 @@ public class Schedule {
 			foreach (ScheduledSituation ss in scheduleOverride.Situations) {
 				AddSituation(ss.From, ss.Duration, ss.Situation, ss.Permament, true);
 			}
+			if (scheduleOverride.NightTimeFrom != null) {
+				NightTimeFrom = scheduleOverride.NightTimeFrom;
+			}
+			if (scheduleOverride.NightTimeDuration != null) {
+				NightTimeDuration = scheduleOverride.NightTimeDuration;
+			}
 		}
-		if (scheduleOverride.NightTimeFrom != null) {
-			NightTimeFrom = scheduleOverride.NightTimeFrom;
-		}
-		if (scheduleOverride.NightTimeDuration != null) {
-			NightTimeDuration = scheduleOverride.NightTimeDuration;
-		}
-
 	}
 
 	public void ScheduleUpdated() {

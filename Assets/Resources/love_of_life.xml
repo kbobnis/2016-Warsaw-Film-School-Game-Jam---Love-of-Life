@@ -10,18 +10,18 @@
 		<param id="happiness" text="Szczęście" startValue="0.5" maxValue="10" isMain="true"/>
 	</parameters>
 
-	<schedule nightTimeFrom="19" nightTimeDuration="10">
-		<scheduledSituation from="0" duration="7" id="sleep" isPermament="false"/>
+	<schedule nightTimeFrom="20" nightTimeDuration="8">
+		<scheduledSituation from="0" duration="4" id="sleep" isPermament="false"/>
+		<scheduledSituation from="4" duration="1" id="clean" isPermament="false"/>
+		<scheduledSituation from="5" duration="1" id="shopping" isPermament="false"/>
+		<scheduledSituation from="6" duration="1" id="schooling" isPermament="false"/>
 		<scheduledSituation from="7" duration="1" id="shopping" isPermament="false"/>
 		<scheduledSituation from="8" duration="4" id="work" isPermament="true"/>
 		<scheduledSituation from="12" duration="1" id="brake" isPermament="true"/>
 		<scheduledSituation from="13" duration="4" id="work" isPermament="true"/>
 		<scheduledSituation from="17" duration="2" id="sleep" isPermament="false"/>
 		<scheduledSituation from="19" duration="1" id="sport" isPermament="false"/>
-		<scheduledSituation from="20" duration="1" id="clean" isPermament="false"/>
-		<scheduledSituation from="21" duration="1" id="sleep" isPermament="false"/>
-		<scheduledSituation from="22" duration="1" id="shopping" isPermament="false"/>
-		<scheduledSituation from="23" duration="1" id="schooling" isPermament="false"/>
+		<scheduledSituation from="20" duration="4" id="sleep" isPermament="false"/>
 	</schedule>
 	
 	<events chance="0.1" />
@@ -98,11 +98,10 @@
 
 	<plot>
 		<plotElement text="Muszę osiągnąć pełnię szczęścia.">
-			<schedule>
-				<scheduledSituation from="0" duration="1" id="house" isPermament="false"/>
+			<!--<schedule>
 				<scheduledSituation from="12" duration="1" id="brake" isPermament="false"/>
 				<scheduledSituation from="13" duration="4" id="work" isPermament="false"/>
-			</schedule>
+			</schedule>-->
 			<goal paramId="happiness" value="1" />
 		</plotElement>
 	</plot>

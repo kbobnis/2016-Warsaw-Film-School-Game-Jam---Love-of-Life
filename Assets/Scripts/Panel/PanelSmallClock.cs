@@ -22,7 +22,7 @@ public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 		int index = 0;
 		bool isRightType = ss.Situation.DayNightType == Game.Me.GameState.Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay);
 		foreach (Transform childT in situationsTrans) {
-			childT.gameObject.FindByName<Transform>("Highlight").gameObject.SetActive(index == hourOfDay);
+			childT.gameObject.FindByName<Image>("Highlight").color = index == hourOfDay?Color.white:Color.gray;
 			index++;
 		}
 	}

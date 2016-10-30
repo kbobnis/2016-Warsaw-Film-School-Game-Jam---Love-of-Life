@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 using UnityEngine.UI;
 
 public class CenterPanelParameters : MonoBehaviour {
 
 	private List<Parameter> Parameters;
+	private float LastUpdate;
 
 	internal void Init(List<Parameter> parameters) {
 		Parameters = parameters;
@@ -21,7 +21,10 @@ public class CenterPanelParameters : MonoBehaviour {
 	}
 
 	void Update() {
-		UpdateParameters();
+		if (LastUpdate + 0.1f < Time.time) {
+			LastUpdate = Time.time;
+			UpdateParameters();
+		}
 	}
 
 	private void UpdateParameters() {

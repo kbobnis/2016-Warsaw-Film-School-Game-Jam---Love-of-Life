@@ -19,7 +19,7 @@ internal class XmlLoader {
 			string id = parameterXml.Attributes["id"].Value;
 			parameterIds.Add(id);
 		}
-
+		bool foundMainParameter = false;
 		List<Parameter> parameters = new List<Parameter>();
 		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
 			string id = parameterXml.Attributes["id"].Value;
@@ -33,6 +33,9 @@ internal class XmlLoader {
 				throw new LoaderException("There is no text in parameter " + id);
 			}
 			bool isMain = parameterXml.Check("isMain") ? parameterXml.Attributes["isMain"].Value == "true" : false;
+			if (isMain) {
+				foundMainParameter = true;
+			}
 			string text = parameterXml.Attributes["text"].Value;
 
 			Parameter p = new Parameter(id, startValue, text, dragDownIfZeroPenalty, isMain);
@@ -40,6 +43,9 @@ internal class XmlLoader {
 			if (p.IsMain) {
 				mainParameters.Add(p);
 			}
+		}
+		if (!foundMainParameter) {
+			throw new LoaderException("There is no main parameter, please add isMain=\"true\" attribute to a param.");
 		}
 
 		foreach (XmlNode parameterXml in parametersXml.ChildNodes) {
