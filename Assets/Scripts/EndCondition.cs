@@ -2,14 +2,17 @@
 internal abstract class EndCondition {
 	private GameState GameState;
 
+	public EndCondition(GameState gameState) {
+		GameState = gameState;
+	}
+
 	internal abstract string GetText();
 
 	internal class Lose : EndCondition {
 		private Parameter Parameter;
 
-		public Lose(Parameter parameter, GameState gameState) {
+		public Lose(Parameter parameter, GameState gameState) : base(gameState){
 			Parameter = parameter;
-			GameState = gameState;
 		}
 
 		internal override string GetText() {
@@ -20,12 +23,12 @@ internal abstract class EndCondition {
 	internal class Win : EndCondition {
 		private Plot.Element PlotElement;
 
-		public Win(Plot.Element plotElement) {
+		public Win(Plot.Element plotElement, GameState gameState) : base(gameState)  {
 			PlotElement = plotElement;
 		}
 
 		internal override string GetText() {
-			return "Wygrałeś, bo skończyłeś zadanie: " + PlotElement.Text;
+			return "Wygrałeś, bo skończyłeś zadanie: " + PlotElement.Text + " w czasie dniu " + GameState.DayNumber + " o godzinie " + (int)GameState.HourOfDay;
 		}
 	}
 }

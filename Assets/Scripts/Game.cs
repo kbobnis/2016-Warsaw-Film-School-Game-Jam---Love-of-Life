@@ -12,11 +12,9 @@ public class Game : MonoBehaviour {
 
 	public PanelCenter PanelCenter;
 	public PanelSelectModule PanelSelectModule;
-	public PanelEndGame PanelEndGame;
 	public PanelWindow PanelWindow;
 
 	public GameState GameState;
-
 
 	// Use this for initialization
 	void Awake () {
@@ -65,13 +63,9 @@ public class Game : MonoBehaviour {
 
 	internal void EndGame(EndCondition endCondition) {
 		GameState.GameHasEnded = true;
-		ChangePanel(typeof(PanelEndGame));
-		PanelSelectModule.gameObject.SetActive(true);
-		PanelEndGame.Init(endCondition);
+		ChangePanel(typeof(PanelSelectModule));
+		OpenWindow().OpenText("Koniec gry: \n" + endCondition.GetText());
 		HighScore.SaveGameScore(GameState.Model.Id, (int)GameState.GameTime);
-		PanelEndGame.ShowHighScore(GameState.Model.Id, (int)GameState.GameTime);
-		ChangePanel(typeof(PanelEndGame));
-		PanelSelectModule.gameObject.SetActive(true);
 	}
 
 	//this is used by button in GUI
@@ -82,7 +76,5 @@ public class Game : MonoBehaviour {
 	private void ChangePanel(Type type) {
 		PanelCenter.gameObject.SetActive(type == typeof(PanelCenter));
 		PanelSelectModule.gameObject.SetActive(type == typeof(PanelSelectModule));
-		PanelEndGame.gameObject.SetActive(type == typeof(PanelEndGame));
-		PanelWindow.gameObject.SetActive(type == typeof(PanelWindow));
 	}
 }

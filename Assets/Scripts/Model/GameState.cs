@@ -66,7 +66,7 @@ public class GameState {
 	private void NewPlotElement() {
 		int index = Plot.Elements.IndexOf(ActualPlotElement) + 1;
 		if (index >= Plot.Elements.Count) {
-			Game.Me.EndGame(new EndCondition.Win(ActualPlotElement));
+			Game.Me.EndGame(new EndCondition.Win(ActualPlotElement, Game.Me.GameState));
 		} else {
 			SetPlotElement(Plot.Elements[index]);
 		}
