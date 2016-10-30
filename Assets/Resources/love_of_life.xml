@@ -97,13 +97,9 @@
 	</situations>
 
 	<plot>
-		<plotElement text="Dopiero jak się ogarnę, zacznę się martwić o resztę">
-			<goal dayNumber="2" />
-		</plotElement>
-		<plotElement text="Nie osiągnę szczęścia to umrę">
+		<plotElement text="Muszę osiągnąć pełnię szczęścia.">
 			<schedule>
 				<scheduledSituation from="0" duration="1" id="house" isPermament="false"/>
-				<scheduledSituation from="8" duration="4" id="work" isPermament="false"/>
 				<scheduledSituation from="12" duration="1" id="brake" isPermament="false"/>
 				<scheduledSituation from="13" duration="4" id="work" isPermament="false"/>
 			</schedule>
