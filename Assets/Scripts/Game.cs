@@ -67,8 +67,8 @@ public class Game : MonoBehaviour {
 	internal void EndGame(EndCondition endCondition) {
 		GameState.GameHasEnded = true;
 		ChangePanel(typeof(PanelSelectModule));
-		OpenWindow().OpenText("Koniec gry: \n" + endCondition.GetText());
-		HighScore.SaveGameScore(GameState.Model.Id, (int)GameState.GameTime);
+		List<UserScore> scores = HighScore.Save(GameState.Model.Id, (int)GameState.GameTime, 10);
+		OpenWindow().OpenText("Koniec gry: \n" + endCondition.GetText() + scores.Select(t => t.Score.ToString()).Aggregate((t,y) => t + "\n" + y));
 	}
 
 	//this is used by button in GUI

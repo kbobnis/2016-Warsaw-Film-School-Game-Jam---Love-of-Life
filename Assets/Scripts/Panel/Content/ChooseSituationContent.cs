@@ -38,17 +38,21 @@ public class ChooseSituationContent : MonoBehaviour {
 				go.FindByName<Button>("ButtonTextSituation").onClick.AddListener(() => {
 					Game.Me.CloseWindow(panelWindow);
 				});
-				go.FindByName<Text>("TextSituationInfo").text = "Szczegóły sytuacji " + s.Text;
+				go.FindByName<Text>("TextSituationInfo").text = "Informacje";
 				go.FindByName<Button>("ButtonSituationInfo").onClick.AddListener(OpenInfo(s));
 			}
 		}
 	}
 
 	private UnityAction AddSituation(int hour, Situation s) {
-		return () => { Game.Me.GameState.Schedule.AddSituation(hour, 1, s, false, true); };
+		return () => {
+			Game.Me.GameState.Schedule.ReplaceSituation(hour, 1, s, false);
+		};
 	}
 
 	private UnityAction OpenInfo(Situation s) {
-		return () => { Game.Me.OpenWindow().OpenText(" Sytuacja " + s.Text + ". Info: " + s.ToString()); };
+		return () => {
+			Game.Me.OpenWindow().OpenText(" Sytuacja " + s.Text + ". Info: " + s.ToString());
+		};
 	}
 }

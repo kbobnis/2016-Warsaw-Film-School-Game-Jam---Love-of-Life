@@ -1,57 +1,39 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class HighScore {
 
-	private static SerializableDictionary<string, List<UserScore>> HighScores;
-	private const int Limit = 100;
-
-	static HighScore() {
-		return;
-		string json = PlayerPrefs.GetString("highScores");
-		SerializableDictionary<string, List<UserScore>> tmp = JsonUtility.FromJson<SerializableDictionary<string, List<UserScore>>>(json);
-		HighScores = tmp;
-		if (HighScores == null) {
-			HighScores = new SerializableDictionary<string, List<UserScore>>();
-		}
+	internal static List<UserScore> Save(string gameId, int gameScore, int returnCount) {
+		List<UserScore> allScores = Load(gameId);
+		allScores.Add(new UserScore(gameScore));
+		allScores = allScores.OrderByDescending(x => x.Score).ToList();
+		ListWrapper lw = new ListWrapper();
+		lw.AddRange(allScores);
+		string serialized = JsonUtility.ToJson(lw);
+		Debug.Log("scores serialized: " + serialized);
+		PlayerPrefs.SetString("scores." + gameId, serialized);
+		return allScores.Take(returnCount).ToList();
 	}
 
-	internal static void SaveGameScore(string gameId, int gameTime) {
-		return;
-		if (!HighScores.ContainsKey(gameId)) {
-			HighScores.Add(gameId, new List<UserScore>());
+	private static List<UserScore> Load(string gameId) {
+		ListWrapper scores = JsonUtility.FromJson<ListWrapper>(PlayerPrefs.GetString("scores." + gameId));
+		if (scores == null) {
+			scores = new ListWrapper();
 		}
-		foreach(UserScore usTmp in HighScores[gameId]) {
-			usTmp.Latest = false;
-		}
-		HighScores[gameId].Add(new UserScore(gameTime, true));
-		HighScores[gameId].Sort((t, y) => t.Hours.CompareTo(y.Hours));
-		string json = JsonUtility.ToJson(HighScores);
-		PlayerPrefs.SetString("highScores", json);
-		PlayerPrefs.Save();
+		return (List<UserScore>)scores;
 	}
-
-	internal static List<UserScore> GetHighScore(string gameId) {
-		return new List<UserScore>();
-		return HighScores[gameId];
-	}
-
 }
 
 [Serializable]
+public class ListWrapper : List<UserScore> { }
+
+[Serializable]
 public class UserScore {
-	public int Hours;
-	public bool Latest;
+	public readonly int Score;
 
-	private UserScore() { }
-	public UserScore(int gameTime, bool latest=false) {
-		Hours = gameTime;
-		Latest = latest;
-	}
-
-	public override string ToString() {
-		return Hours + " godzin. " + (Latest?"<< obecny wynik":"");
+	public UserScore(int gameScore) {
+		Score = gameScore;
 	}
 }
-

@@ -154,7 +154,7 @@ internal class XmlLoader {
 					throw new LoaderException("There is no situation with id: " + situationId);
 				}
 				Situation situation = situations.First(t => t.Id == situationId);
-				schedule.AddSituation(from, duration, situation, isPermament);
+				schedule.ReplaceSituation(from, duration, situation, isPermament);
 			}
 			//we'll check if the schedule is fully filled
 			//the plot element can override schedule and it hasn't be fully filled

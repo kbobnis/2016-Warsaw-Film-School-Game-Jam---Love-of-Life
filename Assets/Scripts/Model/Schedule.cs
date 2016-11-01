@@ -13,7 +13,7 @@ public class Schedule {
 		NightTimeDuration = nightTimeDuration;
 	}
 
-	internal void AddSituation(int from, int duration, Situation situation, bool permament, bool @override=false) {
+	internal void ReplaceSituation(int from, int duration, Situation situation, bool permament) {
 
 		//if duration bigger than 1 then cut it to pieces;
 		if (duration < 1) {
@@ -21,7 +21,7 @@ public class Schedule {
 		}
 		if (duration > 1) {
 			for (int i = 0; i < duration; i++) {
-				AddSituation(from + i, 1, situation, permament, @override);
+				ReplaceSituation(from + i, 1, situation, permament);
 			}
 			return;
 		}
@@ -30,12 +30,8 @@ public class Schedule {
 		ScheduledSituation[] s = Situations.ToArray();
 		foreach (ScheduledSituation ssTmp in s) {
 			if (AreOverlapping(ssTmp, ss)) {
-				if (@override) {
-					Situations.Remove(ssTmp);
-					break;
-				} else {
-					throw new Exception("Schedules are overlapping: " + ss + ", and: " + ssTmp);
-				}
+				Situations.Remove(ssTmp);
+				break;
 			}
 		}
 		Situations.Add(ss);
@@ -73,7 +69,7 @@ public class Schedule {
 	internal void OverrideSchedule(Schedule scheduleOverride) {
 		if (scheduleOverride != null) {
 			foreach (ScheduledSituation ss in scheduleOverride.Situations) {
-				AddSituation(ss.From, ss.Duration, ss.Situation, ss.Permament, true);
+				ReplaceSituation(ss.From, ss.Duration, ss.Situation, ss.Permament);
 			}
 			if (scheduleOverride.NightTimeFrom != null) {
 				NightTimeFrom = scheduleOverride.NightTimeFrom;
@@ -95,7 +91,7 @@ public class Schedule {
 	}
 
 	internal void Update(int hour, Situation ss) {
-		AddSituation(hour, 1, ss, false);
+		ReplaceSituation(hour, 1, ss, false);
 	}
 
 	public interface ScheduleUpdateListener {
