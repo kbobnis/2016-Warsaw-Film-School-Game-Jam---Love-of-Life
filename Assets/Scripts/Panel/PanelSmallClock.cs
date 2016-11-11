@@ -12,7 +12,7 @@ public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 	}
 
 	private void UpdateDayPointer() {
-		float angle = (Game.Me.GameState.DayNumber - 1 + Game.Me.GameState.HourOfDay / 24f)/ 30f * 360f * -1f; //-1 because we start from day 1 not 0.
+		float angle = (Game.Me.GameState.DayNumber + Game.Me.GameState.HourOfDay / 24f)/ 30f * 360f * -1f;
 		gameObject.FindByName<Transform>("RedNeedle").localRotation = Quaternion.AngleAxis(angle, new Vector3(0, 0, 1));
 	}
 

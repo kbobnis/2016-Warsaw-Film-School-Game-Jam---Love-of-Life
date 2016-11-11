@@ -1,6 +1,5 @@
 <root>
 	<parameters dragDownIfZeroPenalty="2">
-		<param id="walletStatus" text="Pieniądze" startValue="10" maxValue="10" />
 		<param id="concentration" text="Koncetracja" startValue="0.7" maxValue="1" />
 		<param id="happiness" text="Szczęście" startValue="0.5" maxValue="10" isMain="true"/>
 	</parameters>
@@ -17,21 +16,15 @@
 			<change what="concentration" value="0.2" />
 			<change what="happiness" value="0.1" />
 		</situation>
-		<situation id="goToBeach" text="Wyjście na plażę" type="day">
-			<change what="concentration" value="-0.2" />
-			<change what="walletStatus" value="-0.1" />
-			<change what="happiness" value="0.5" />
-		</situation>
 		<situation id="goToLunapark" text="Wyjście na lunapark" type="day">
 			<change what="concentration" value="-0.3" />
-			<change what="walletStatus" value="-0.3" />
 			<change what="happiness" value="0.8" />
 		</situation>
 	</situations>
 
 	<plot>
 		<plotElement text="Chcę się super bawić na wakacjach!">
-			<goal paramId="happiness" value="10" />
+			<goal paramId="happiness" value="1" />
 		</plotElement>
 	</plot>
 

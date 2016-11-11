@@ -87,7 +87,7 @@ public class Schedule {
 	}
 
 	internal Situation.Type GetActualDayNightType(int hourOfDay) {
-		return (hourOfDay > NightTimeFrom || hourOfDay < (NightTimeFrom + NightTimeDuration) % 24) ? Situation.Type.Night : Situation.Type.Day;
+		return (hourOfDay >= NightTimeFrom || hourOfDay < (NightTimeFrom + NightTimeDuration) % 24) ? Situation.Type.Night : Situation.Type.Day;
 	}
 
 	internal void Update(int hour, Situation ss) {

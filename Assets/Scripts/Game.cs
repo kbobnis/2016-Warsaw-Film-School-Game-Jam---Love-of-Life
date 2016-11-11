@@ -18,19 +18,23 @@ public class Game : MonoBehaviour {
 	public float LastUpdate;
 
 	// Use this for initialization
-	void Awake () {
+	void Awake() {
 		Screen.fullScreen = false;
 		Me = this;
 		gameObject.FindByName<Transform>("PanelMinigame").gameObject.SetActive(true);
 		gameObject.FindByName<Transform>("PanelPlot").gameObject.SetActive(true);
 		ChangePanel(typeof(PanelSelectModule));
 	}
-
-	void Update () {
-		if (GameState != null ) {
+	void Update() {
+		if (GameState != null) {
 			LastUpdate = Time.time;
 			GameState.Update(Time.deltaTime);
 		}
+	}
+
+	public void QuitAdventure() {
+		GameState.GameHasEnded = true;
+		ChangePanel(typeof(PanelSelectModule));
 	}
 
 	internal PanelWindow OpenWindow() {
@@ -51,6 +55,7 @@ public class Game : MonoBehaviour {
 		//getting rid of comments
 		string pattern = "(<!--.*?--\\>)";
 		model.InnerXml = Regex.Replace(model.InnerXml, pattern, string.Empty, RegexOptions.Singleline);
+		string gameHash = HashCalculator.Md5Sum(model.InnerXml);
 
 		List<Parameter> parameters = XmlLoader.LoadParameters(model);
 		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
@@ -58,7 +63,7 @@ public class Game : MonoBehaviour {
 		XElement xElement = XElement.Parse(Resources.Load<TextAsset>(modelDir).text);
 		List<Plot.Element> plotElements = XmlLoader.LoadPlot(xElement.Elements().FirstOrDefault(t => t.Name == "plot"), parameters, situations);
 
-		GameState = new GameState(parameters, situations, schedule, new Model(moduleId, XmlLoader.LoadTime(model, parameters)), new Plot(plotElements));
+		GameState = new GameState(parameters, situations, schedule, new Model(moduleId, XmlLoader.LoadTime(model, parameters)), new Plot(plotElements), gameHash);
 		GameState.GameTimeChangeListeners.Add(PanelCenter);
 
 		PanelCenter.Init(GameState);
@@ -66,10 +71,25 @@ public class Game : MonoBehaviour {
 	}
 
 	internal void EndGame(EndCondition endCondition) {
-		GameState.GameHasEnded = true;
-		ChangePanel(typeof(PanelSelectModule));
-		List<UserScore> scores = HighScore.Save(GameState.Model.Id, (int)GameState.GameTime, 10);
-		OpenWindow().OpenText("Koniec gry: \n" + endCondition.GetText() + scores.Select(t => t.Score.ToString()).Aggregate((t,y) => t + "\n" + y));
+		if (!GameState.GameHasEnded) {
+			GameState.GameHasEnded = true;
+			ChangePanel(typeof(PanelSelectModule));
+			int gameTime = (int)GameState.GameTime;
+			string text = endCondition.GetText();
+			GameHighScores scores = HighScore.Load(GameState.Model.Id, GameState.GameHash);
+			if (endCondition.GetType() == typeof(EndCondition.Win)) {
+				scores = HighScore.Save(GameState.Model.Id, GameState.GameHash, gameTime, 10);
+				text += "\n\nJesteś na " + (scores.Scores.FindIndex(0, us => us.Score >= gameTime) + 1)
+					+ " miejscu.\n\n";
+			}
+			int i = 0;
+			if (scores.Scores.Count > 0) {
+				text += "Wszystkie wyniki:\n" + scores.Scores
+					.Select(t => (++i) + ". " + t.Score / 24 + " dni " + t.Score % 24 + " godzin ")
+					.Aggregate((t, y) => t + "\n" + y);
+			}
+			OpenWindow().OpenText(text);
+		}
 	}
 
 	//this is used by button in GUI

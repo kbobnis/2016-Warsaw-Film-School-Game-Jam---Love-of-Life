@@ -14,13 +14,13 @@ public class GameState {
 	public List<Situation> Situations;
 	public ScheduledSituation ActualSituation;
 	public bool GameHasEnded;
+	public readonly string GameHash;
 
 	public delegate void IsNewDay(int newDayNumber);
-	public event IsNewDay IsNewDayEvent;
 
 	public List<GameTimeChangeListener> GameTimeChangeListeners = new List<GameTimeChangeListener>();
 
-	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule schedule, Model model, Plot plot) {
+	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule schedule, Model model, Plot plot, string gameHash) {
 		Situations = situations;
 		ActualGameSpeed = model.TimeChanges.NormalSpeed;
 		Model = model;
@@ -29,6 +29,7 @@ public class GameState {
 		Parameters = parameters;
 		Plot = plot;
 		SetPlotElement(plot.Elements[0]);
+		GameHash = gameHash;
 	}
 
 	public float HourOfDay {
@@ -44,7 +45,7 @@ public class GameState {
 
 			float timeDelta = deltaTime / 60f * ActualGameSpeed;
 			GameTime += timeDelta;
-			foreach(GameTimeChangeListener l in GameTimeChangeListeners) {
+			foreach (GameTimeChangeListener l in GameTimeChangeListeners) {
 				l.GameTimeUpdated(hourOfDay);
 			}
 			UpdateParameters(timeDelta);
@@ -79,7 +80,7 @@ public class GameState {
 
 	public int DayNumber {
 		get {
-			return (int)GameTime / 24 + 1;
+			return (int)GameTime / 24;
 		}
 	}
 
@@ -90,7 +91,7 @@ public class GameState {
 			p.IsDraggedDownBy.Clear();
 			p.IsDraggingDown = false;
 		}
-		bool isRightType = ActualSituation.Situation.DayNightType.IsRightType( Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay) );
+		bool isRightType = ActualSituation.Situation.DayNightType.IsRightType(Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay));
 
 		//actual situation changes
 		foreach (Change change in ActualSituation.Situation.Changes) {

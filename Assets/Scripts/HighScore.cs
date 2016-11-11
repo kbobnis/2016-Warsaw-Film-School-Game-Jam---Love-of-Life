@@ -1,37 +1,41 @@
 ﻿using System.Linq;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class HighScore {
 
-	internal static List<UserScore> Save(string gameId, int gameScore, int returnCount) {
-		List<UserScore> allScores = Load(gameId);
-		allScores.Add(new UserScore(gameScore));
-		allScores = allScores.OrderByDescending(x => x.Score).ToList();
-		ListWrapper lw = new ListWrapper();
-		lw.AddRange(allScores);
-		string serialized = JsonUtility.ToJson(lw);
-		Debug.Log("scores serialized: " + serialized);
-		PlayerPrefs.SetString("scores." + gameId, serialized);
-		return allScores.Take(returnCount).ToList();
+	internal static GameHighScores Save(string gameId, string gameHash, int gameScore, int returnCount) {
+		GameHighScores allScores = Load(gameId, gameHash);
+		allScores.Scores.Add(new UserScore(gameScore));
+		allScores.Scores = allScores.Scores.OrderBy(x => x.Score).ToList();
+		string jsoned = JsonUtility.ToJson(new HashedScores() { { gameHash, allScores } });
+		PlayerPrefs.SetString("scores." + gameId, jsoned);
+		return allScores;
 	}
 
-	private static List<UserScore> Load(string gameId) {
-		ListWrapper scores = JsonUtility.FromJson<ListWrapper>(PlayerPrefs.GetString("scores." + gameId));
-		if (scores == null) {
-			scores = new ListWrapper();
+	public static GameHighScores Load(string gameId, string gameHash) {
+		string jsoned = PlayerPrefs.GetString("scores." + gameId, "{}");
+		HashedScores hs = JsonUtility.FromJson<HashedScores>(jsoned);
+		if (!hs.ContainsKey(gameHash)) {
+			hs.Add(gameHash, new GameHighScores());
 		}
-		return (List<UserScore>)scores;
+		return hs[gameHash];
 	}
 }
 
 [Serializable]
-public class ListWrapper : List<UserScore> { }
+public class HashedScores : SerializableDictionary<string, GameHighScores> {
+}
+
+[Serializable]
+public class GameHighScores {
+	public List<UserScore> Scores = new List<UserScore>();
+}
 
 [Serializable]
 public class UserScore {
-	public readonly int Score;
+	public int Score;
 
 	public UserScore(int gameScore) {
 		Score = gameScore;

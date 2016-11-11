@@ -28,7 +28,7 @@ internal abstract class EndCondition {
 		}
 
 		internal override string GetText() {
-			return "Wygrałeś, bo skończyłeś zadanie: " + PlotElement.Text + " w czasie " + GameState.DayNumber + "dni, " + (int)GameState.HourOfDay + " godzin.";
+			return "Wygrałeś, bo skończyłeś zadanie: " + PlotElement.Text + " w czasie " + GameState.DayNumber+ "dni, " + (int)GameState.HourOfDay + " godzin.";
 		}
 	}
 }
