@@ -22,6 +22,7 @@ public class Game : MonoBehaviour {
 		Screen.fullScreen = false;
 		Me = this;
 		gameObject.FindByName<Transform>("PanelMinigame").gameObject.SetActive(true);
+		gameObject.FindByName<Transform>("PanelPlot").gameObject.SetActive(true);
 		ChangePanel(typeof(PanelSelectModule));
 	}
 

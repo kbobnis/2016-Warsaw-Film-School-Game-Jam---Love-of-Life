@@ -40,10 +40,12 @@ internal class XmlLoader {
 
 			Parameter p = new Parameter(id, startValue, text, dragDownIfZeroPenalty, isMain);
 			parameters.Add(p);
+
 			if (p.IsMain) {
 				mainParameters.Add(p);
 			}
 		}
+
 		if (!foundMainParameter) {
 			throw new LoaderException("There is no main parameter, please add isMain=\"true\" attribute to a param.");
 		}
@@ -141,7 +143,7 @@ internal class XmlLoader {
 				if (!scheduleXml.Check("nightTimeDuration")) {
 					throw new LoaderException("nightTimeDuration has to be defined.");
 				}
-				 nightTimeDuration= int.Parse(scheduleXml.Attributes["nightTimeDuration"].Value);
+				nightTimeDuration = int.Parse(scheduleXml.Attributes["nightTimeDuration"].Value);
 			}
 
 			Schedule schedule = new Schedule(nightTimeFrom, nightTimeDuration);
