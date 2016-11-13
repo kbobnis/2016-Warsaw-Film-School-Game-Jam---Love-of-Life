@@ -11,27 +11,18 @@
 	</parameters>
 
 	<schedule nightTimeFrom="20" nightTimeDuration="8">
-		<scheduledSituation from="0" duration="4" id="sleep" isPermament="false"/>
-		<scheduledSituation from="4" duration="1" id="clean" isPermament="false"/>
-		<scheduledSituation from="5" duration="1" id="shopping" isPermament="false"/>
-		<scheduledSituation from="6" duration="1" id="schooling" isPermament="false"/>
-		<scheduledSituation from="7" duration="1" id="shopping" isPermament="false"/>
-		<scheduledSituation from="8" duration="4" id="work" isPermament="true"/>
-		<scheduledSituation from="12" duration="1" id="brake" isPermament="true"/>
-		<scheduledSituation from="13" duration="4" id="work" isPermament="true"/>
-		<scheduledSituation from="17" duration="2" id="sleep" isPermament="false"/>
-		<scheduledSituation from="19" duration="1" id="sport" isPermament="false"/>
-		<scheduledSituation from="20" duration="4" id="sleep" isPermament="false"/>
+		<scheduledSituation from="20" duration="8" id="sleep" isPermament="false"/>
+		<scheduledSituation from="4" duration="1" id="shopping" isPermament="false"/>
+		<scheduledSituation from="8" duration="8" id="work" isPermament="true"/>
 	</schedule>
-	
-	<events chance="0.1" />
 	
 	<!-- functions maxValue- and getOne- -->
 	<time normalSpeed="10" fasterSpeed="300">
 		<change what="walletStatus" value="-0.01 * maxValue-houseClean" />
 		<change what="fridgeStatus" value="-0.015 * condition + -0.02" />
 		<change what="condition" value="-0.01"/>
-		<change what="houseClean" value="-0.03 * maxValue-houseClean" />
+		<change what="condition" maxValue="maxValue-condition * -0.005"/>
+		<change what="houseClean" value="getOne-houseClean * -0.03 * maxValue-houseClean" />
 		<change what="houseClean" value="0.04 * cleaningService" />
 	</time>
 
@@ -60,8 +51,8 @@
 
 		<situation id="shopping" text="Zakupy" type="day">
 			<change what="walletStatus" value="-0.1 * maxValue-fridgeStatus" />
-			<change what="fridgeStatus" value="0.8 * getOne-walletStatus * maxValue-fridgeStatus * concentration"/>
-			<change what="concentration" value="-0.02" />
+			<change what="fridgeStatus" value="1 * getOne-walletStatus * maxValue-fridgeStatus"/>
+			<change what="concentration" value="-0.01" />
 			
 			<button text="Wynajmij sprzątaczkę" >
 				<change what="cleaningService" value="maxValue-cleaningService" />
@@ -85,14 +76,11 @@
 		</situation>
 		<situation id="work" text="Praca" type="day">
 			<change what="walletStatus" value="concentration * salary"/>
-			<change what="concentration" value="-0.12"/>
+			<change what="concentration" value="-0.06"/>
 		</situation>
 		<situation id="schooling" text="Praca na awans" type="day">
 			<change what="salary" value="0.01 * concentration"/>
 			<change what="concentration" value="-0.06" />
-		</situation>
-		<situation id="brake" text="Przerwa" selectable="false" type="day">
-			<change what="happiness" value="0.05 * getOne-condition "/>
 		</situation>
 	</situations>
 

@@ -15,8 +15,8 @@ public class PanelSituation : MonoBehaviour {
 		Transform panelButtons = gameObject.FindByName<Transform>("PanelButtons");
 		int i = 0;
 		foreach (Transform button in panelButtons) {
-			button.gameObject.SetActive(i < actualSituation.Buttons.Count);
-			if (i < actualSituation.Buttons.Count) {
+			button.gameObject.SetActive(actualSituation != null && i < actualSituation.Buttons.Count);
+			if (actualSituation != null && i < actualSituation.Buttons.Count) {
 				LOL.Button b = actualSituation.Buttons[i];
 				button.GetComponentInChildren<Text>().text = b.Text;// + "\n\nKoszt: " + b.Changes.Where(change => change.ValueCalculation != null && change.ValueCalculation.Calculate() < 0).Select(change => change.What.Text + " " + change.ValueCalculation.Calculate().ToString("0.0")).Aggregate((t, y) => t + ", " + y);
 				button.GetComponent<Button>().onClick.RemoveAllListeners();

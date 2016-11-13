@@ -22,8 +22,8 @@ public class PanelCenter : MonoBehaviour, GameTimeChangeListener {
 
 	internal void HourHasChanged(int newHour) {
 		ScheduledSituation ss = GameState.Schedule.GetSituationForHour(newHour);
-		GameState.ActualSituation = new ScheduledSituation((int)GameState.HourOfDay, 1, ss.Situation, false);
-		PanelSituation.HourHasChanged(newHour, ss.Situation, GameState);
+		GameState.ActualSituation = ss!=null?new ScheduledSituation((int)GameState.HourOfDay, 1, ss.Situation, false):null;
+		PanelSituation.HourHasChanged(newHour, ss!=null?ss.Situation:null, GameState);
 	}
 
 	internal void Init(GameState gameState) {

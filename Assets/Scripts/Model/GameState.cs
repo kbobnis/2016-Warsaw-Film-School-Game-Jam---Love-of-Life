@@ -16,8 +16,6 @@ public class GameState {
 	public bool GameHasEnded;
 	public readonly string GameHash;
 
-	public delegate void IsNewDay(int newDayNumber);
-
 	public List<GameTimeChangeListener> GameTimeChangeListeners = new List<GameTimeChangeListener>();
 
 	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule schedule, Model model, Plot plot, string gameHash) {
@@ -91,11 +89,13 @@ public class GameState {
 			p.IsDraggedDownBy.Clear();
 			p.IsDraggingDown = false;
 		}
-		bool isRightType = ActualSituation.Situation.DayNightType.IsRightType(Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay));
+		bool isRightType = ActualSituation==null || ActualSituation.Situation.DayNightType.IsRightType(Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay));
 
 		//actual situation changes
-		foreach (Change change in ActualSituation.Situation.Changes) {
-			change.UpdateParams(isRightType, timeDelta);
+		if (ActualSituation != null) {
+			foreach (Change change in ActualSituation.Situation.Changes) {
+				change.UpdateParams(isRightType, timeDelta);
+			}
 		}
 
 		//all time changes

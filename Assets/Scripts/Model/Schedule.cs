@@ -21,7 +21,11 @@ public class Schedule {
 		}
 		if (duration > 1) {
 			for (int i = 0; i < duration; i++) {
-				ReplaceSituation(from + i, 1, situation, permament);
+				int hour = from + i;
+				if (hour > 23) {
+					hour -= 24;
+				}
+				ReplaceSituation(hour, 1, situation, permament);
 			}
 			return;
 		}
@@ -59,7 +63,7 @@ public class Schedule {
 				return ss;
 			}
 		}
-		throw new Exception("There has to be always a situation everywhere, check hour: " + hour);
+		return null;
 	}
 
 	internal void AddScheduleUpdateSituation(ScheduleUpdateListener listener) {

@@ -48,7 +48,7 @@ public class Parameter {
 
 	public void DragDown(bool isRightType) {
 		if (MaxValue != null && ActualValue > MaxValue.Calculate(true) * ActualMaxValueMultiplier) { //max value is always the right type
-			ActualValue = MaxValue.Calculate(isRightType) * ActualMaxValueMultiplier;
+			ActualValue = MaxValue.Calculate(true) * ActualMaxValueMultiplier;
 		}
 
 		if (ActualValue < 0f && !IsMain) { //if this is main, then this is already over

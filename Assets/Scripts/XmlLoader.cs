@@ -158,15 +158,6 @@ internal class XmlLoader {
 				Situation situation = situations.First(t => t.Id == situationId);
 				schedule.ReplaceSituation(from, duration, situation, isPermament);
 			}
-			//we'll check if the schedule is fully filled
-			//the plot element can override schedule and it hasn't be fully filled
-			if (fillAllDay) {
-				for (int i = 0; i < 24; i++) {
-					if (schedule.GetSituationForHour(i) == null) {
-						throw new LoaderException("You haven't defined situation for hour " + i + ", add it.");
-					}
-				}
-			}
 			return schedule;
 		} catch (LoaderException e) {
 			throw new LoaderException("When loading schedule: " + e.Message);

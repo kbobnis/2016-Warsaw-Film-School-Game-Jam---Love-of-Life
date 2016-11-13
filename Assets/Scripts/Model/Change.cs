@@ -24,7 +24,7 @@
 
 		What.UpdateValuesFromPreviousLoop();
 		if (MaxValueCalculation != null) {
-			What.PreviousLoopMaxValueDelta += MaxValueCalculation.Calculate(isRightType, timeDelta);
+			What.PreviousLoopMaxValueDelta += MaxValueCalculation.Calculate(true, timeDelta);
 		}
 
 		if (ValueCalculation != null) {

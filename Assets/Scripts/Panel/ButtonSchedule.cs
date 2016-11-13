@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonSchedule : MonoBehaviour {
 
@@ -27,13 +28,11 @@ public class ButtonSchedule : MonoBehaviour {
 	private ButtonAction ActionType;
 
 	internal void Init(Situation s, bool isPermament, int myHour) {
-		if (s == null) {
-			throw new Exception("Situation can not be null");
-		}
 		MyHour = myHour;
 		Ss = s;
 		IsPermament = isPermament;
 		ActionType = isPermament ? ButtonAction.IsPermament : ButtonAction.Change;
+		GetComponentInChildren<Text>().text = s!=null?s.Text:"";
 	}
 
 	public void ButtonActionClicked() {
