@@ -5,8 +5,12 @@
 	</parameters>
 
 	<schedule nightTimeFrom="22" nightTimeDuration="11">
-		<scheduledSituation from="0" duration="24" id="sleep" isPermament="false"/>
+		<scheduledSituation from="22" duration="11" id="sleep" isPermament="false"/>
+		<scheduledSituation from="15" duration="1" id="goToLunapark" isPermament="false"/>
 	</schedule>
+
+	<gainPoints afterEveryHour="10">
+	</gainPoints>
 
 	<time normalSpeed="10" fasterSpeed="300">
 	</time>
@@ -24,7 +28,7 @@
 
 	<plot>
 		<plotElement text="Chcę się super bawić na wakacjach!">
-			<goal paramId="happiness" value="1" />
+			<goal paramId="happiness" value="10" />
 		</plotElement>
 	</plot>
 

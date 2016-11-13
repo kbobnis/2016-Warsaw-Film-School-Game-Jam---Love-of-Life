@@ -7,6 +7,7 @@ public class GameState {
 
 	internal List<Parameter> Parameters;
 	public float ActualGameSpeed = 1f;
+	public int ActualPoints;
 	public float GameTime;
 
 	internal Plot.Element ActualPlotElement;
@@ -15,10 +16,13 @@ public class GameState {
 	public ScheduledSituation ActualSituation;
 	public bool GameHasEnded;
 	public readonly string GameHash;
+	public readonly int PointsEvery;
 
 	public List<GameTimeChangeListener> GameTimeChangeListeners = new List<GameTimeChangeListener>();
+	public List<ActualPointsChangeListener> ActualPointsChangeLisnters = new List<ActualPointsChangeListener>();
 
-	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule schedule, Model model, Plot plot, string gameHash) {
+	public GameState(List<Parameter> parameters, List<Situation> situations, Schedule schedule, Model model, Plot plot, string gameHash, int pointsEvery) {
+		PointsEvery = pointsEvery;
 		Situations = situations;
 		ActualGameSpeed = model.TimeChanges.NormalSpeed;
 		Model = model;
@@ -43,6 +47,16 @@ public class GameState {
 
 			float timeDelta = deltaTime / 60f * ActualGameSpeed;
 			GameTime += timeDelta;
+
+			if (hourOfDay != HourOfDay) {
+				int newPoints = (int)GameTime % PointsEvery == 0 ? 1 : 0;
+				if (newPoints > 0) {
+					ActualPoints += newPoints;
+					foreach(ActualPointsChangeListener apl in ActualPointsChangeLisnters) {
+						apl.PointsChanged(ActualPoints);
+					}
+				}
+			}
 			foreach (GameTimeChangeListener l in GameTimeChangeListeners) {
 				l.GameTimeUpdated(hourOfDay);
 			}

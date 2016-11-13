@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 
@@ -22,7 +23,7 @@ public class PanelSmallClock : MonoBehaviour, Schedule.ScheduleUpdateListener {
 		int index = 0;
 		bool isRightType = ss==null || ss.Situation.DayNightType == Game.Me.GameState.Schedule.GetActualDayNightType((int)Game.Me.GameState.HourOfDay);
 		foreach (Transform childT in situationsTrans) {
-			childT.gameObject.FindByName<Image>("Highlight").color = index == hourOfDay ? Color.white : Color.gray;
+			childT.gameObject.FindByName<UICornerCut>("Highlight").color = index == hourOfDay ? Color.white : Color.gray;
 			index++;
 		}
 	}

@@ -61,9 +61,10 @@ public class Game : MonoBehaviour {
 		List<Situation> situations = XmlLoader.LoadSituations(model, parameters);
 		Schedule schedule = XmlLoader.LoadSchedule(model.GetElementsByTagName("schedule")[0], situations, true);
 		XElement xElement = XElement.Parse(Resources.Load<TextAsset>(modelDir).text);
+		int pointsEvery = int.Parse(xElement.Elements().FirstOrDefault(t => t.Name == "gainPoints").Attribute("afterEveryHour").Value);
 		List<Plot.Element> plotElements = XmlLoader.LoadPlot(xElement.Elements().FirstOrDefault(t => t.Name == "plot"), parameters, situations);
 
-		GameState = new GameState(parameters, situations, schedule, new Model(moduleId, XmlLoader.LoadTime(model, parameters)), new Plot(plotElements), gameHash);
+		GameState = new GameState(parameters, situations, schedule, new Model(moduleId, XmlLoader.LoadTime(model, parameters)), new Plot(plotElements), gameHash, pointsEvery);
 		GameState.GameTimeChangeListeners.Add(PanelCenter);
 
 		PanelCenter.Init(GameState);
