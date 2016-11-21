@@ -22,7 +22,6 @@ public class Game : MonoBehaviour {
 		Screen.fullScreen = false;
 		Me = this;
 		gameObject.FindByName<Transform>("PanelMinigame").gameObject.SetActive(true);
-		gameObject.FindByName<Transform>("PanelPlot").gameObject.SetActive(true);
 		ChangePanel(typeof(PanelSelectModule));
 	}
 	void Update() {
@@ -66,6 +65,7 @@ public class Game : MonoBehaviour {
 
 		GameState = new GameState(parameters, situations, schedule, new Model(moduleId, XmlLoader.LoadTime(model, parameters)), new Plot(plotElements), gameHash, pointsEvery);
 		GameState.GameTimeChangeListeners.Add(PanelCenter);
+		GameState.ActualPointsChangeLisnters.Add(PanelCenter.gameObject.FindByName<PanelAvailablePoints>("PanelAvailablePoints"));
 
 		PanelCenter.Init(GameState);
 		ChangePanel(typeof(PanelCenter));

@@ -26,6 +26,9 @@
 		<change what="houseClean" value="0.04 * cleaningService" />
 	</time>
 
+	<gainPoints afterEveryHour="10">
+	</gainPoints>
+
 	<situations>
 		<situation id="house" text="Marnowanie czasu" type="day">
 			<change what="concentration" value="-0.01" />

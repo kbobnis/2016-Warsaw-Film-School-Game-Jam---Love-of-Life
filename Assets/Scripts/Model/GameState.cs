@@ -48,8 +48,9 @@ public class GameState {
 			float timeDelta = deltaTime / 60f * ActualGameSpeed;
 			GameTime += timeDelta;
 
-			if (hourOfDay != HourOfDay) {
-				int newPoints = (int)GameTime % PointsEvery == 0 ? 1 : 0;
+			//hour has changed to new one.
+			if ((int)hourOfDay != (int)HourOfDay) {
+				int newPoints = ((int)GameTime) % PointsEvery == 0 ? 1 : 0;
 				if (newPoints > 0) {
 					ActualPoints += newPoints;
 					foreach(ActualPointsChangeListener apl in ActualPointsChangeLisnters) {
