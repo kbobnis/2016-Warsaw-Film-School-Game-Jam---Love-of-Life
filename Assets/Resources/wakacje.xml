@@ -1,0 +1,35 @@
+<root>
+	<parameters dragDownIfZeroPenalty="2">
+		<param id="concentration" text="Koncetracja" startValue="0.7" maxValue="1" />
+		<param id="happiness" text="Szczęście" startValue="0.5" maxValue="10" isMain="true"/>
+	</parameters>
+
+	<schedule nightTimeFrom="22" nightTimeDuration="11">
+		<scheduledSituation from="22" duration="11" id="sleep" isPermament="false"/>
+		<scheduledSituation from="15" duration="1" id="goToLunapark" isPermament="false"/>
+	</schedule>
+
+	<gainPoints afterEveryHour="10">
+	</gainPoints>
+
+	<time normalSpeed="10" fasterSpeed="300">
+	</time>
+
+	<situations>
+		<situation id="sleep" text="Sen" type="night">
+			<change what="concentration" value="0.2" />
+			<change what="happiness" value="0.1" />
+		</situation>
+		<situation id="goToLunapark" text="Wyjście na lunapark" type="day">
+			<change what="concentration" value="-0.3" />
+			<change what="happiness" value="0.8" />
+		</situation>
+	</situations>
+
+	<plot>
+		<plotElement text="Chcę się super bawić na wakacjach!">
+			<goal paramId="happiness" value="10" />
+		</plotElement>
+	</plot>
+
+</root>
