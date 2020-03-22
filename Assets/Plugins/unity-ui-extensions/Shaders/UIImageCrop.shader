@@ -1,6 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-/// Credit 00christian00
+﻿/// Credit 00christian00
 /// Sourced from - http://forum.unity3d.com/threads/any-way-to-show-part-of-an-image-without-using-mask.360085/#post-2332030
 
 Shader "UI Extensions/UI Image Crop" {
@@ -48,7 +46,7 @@ Shader "UI Extensions/UI Image Crop" {
           v2f o;
 		  o.color=v.color;
 		  o.color.a=0.1;
-		  o.pos = UnityObjectToClipPos (v.pos);
+		  o.pos = mul (UNITY_MATRIX_MVP, v.pos);
 		  
 		  o.uv=TRANSFORM_TEX(v.uv, _MainTex); 
 		 

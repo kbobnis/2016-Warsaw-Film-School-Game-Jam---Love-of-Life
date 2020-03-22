@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -20,11 +19,6 @@ public class Game : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake() {
-		CultureInfo ci = new CultureInfo("en-GB");
-
-		CultureInfo.CurrentUICulture = ci;
-		CultureInfo.CurrentCulture = ci;
-
 		Screen.fullScreen = false;
 		Me = this;
 		gameObject.FindByName<Transform>("PanelMinigame").gameObject.SetActive(true);
